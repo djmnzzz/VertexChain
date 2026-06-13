@@ -1,6 +1,6 @@
 # Chaos Engineering
 
-Automated chaos experiments for GistPin to validate resilience and recovery.
+Automated chaos experiments for VertexChain to validate resilience and recovery.
 
 ## Experiments
 
@@ -15,7 +15,7 @@ Automated chaos experiments for GistPin to validate resilience and recovery.
 
 ```bash
 # Run a specific experiment
-NAMESPACE=gistpin DURATION=60 bash infrastructure/scripts/run-chaos-experiment.sh pod-failure
+NAMESPACE=vertexchain DURATION=60 bash infrastructure/scripts/run-chaos-experiment.sh pod-failure
 
 # Available experiments
 bash infrastructure/scripts/run-chaos-experiment.sh <experiment>
@@ -26,7 +26,7 @@ bash infrastructure/scripts/run-chaos-experiment.sh <experiment>
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `NAMESPACE` | `gistpin` | Kubernetes namespace |
+| `NAMESPACE` | `vertexchain` | Kubernetes namespace |
 | `DURATION` | `60` | Experiment duration in seconds |
 | `LATENCY` | `200ms` | Latency for network-latency experiment |
 | `DEPLOYMENT` | `backend` | Deployment name for failover experiment |

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The OpenTelemetry collector runs as a unified telemetry pipeline, receiving signals from GistPin services and exporting them to backends (Prometheus, Jaeger, Loki).
+The OpenTelemetry collector runs as a unified telemetry pipeline, receiving signals from VertexChain services and exporting them to backends (Prometheus, Jaeger, Loki).
 
 ## Architecture
 
@@ -41,7 +41,7 @@ services:
     volumes:
       - ./otel-collector.yml:/etc/otelcol/otel-collector.yml
       - ./otel-pipelines.yml:/etc/otelcol/otel-pipelines.yml
-      - ./logs:/var/log/gistpin
+      - ./logs:/var/log/vertexchain
     ports:
       - "4317:4317"   # OTLP gRPC
       - "4318:4318"   # OTLP HTTP
@@ -104,7 +104,7 @@ spec:
 
 ## Application Instrumentation
 
-### Node.js (GistPin Backend)
+### Node.js (VertexChain Backend)
 
 ```bash
 npm install @opentelemetry/sdk-node \
@@ -118,7 +118,7 @@ const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
 
 const sdk = new NodeSDK({
-  serviceName: 'gistpin-backend',
+  serviceName: 'vertexchain-backend',
   serviceVersion: process.env.npm_package_version,
   traceExporter: new OTLPTraceExporter({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4317'

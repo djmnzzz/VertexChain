@@ -1,12 +1,12 @@
-# GistPin Architecture
+# VertexChain Architecture
 
 ## System Overview
 
-GistPin is a decentralized geospatial social platform combining social curation, mapping, and on-chain ownership via Soroban smart contracts on the Stellar network.
+VertexChain is a decentralized geospatial social platform combining social curation, mapping, and on-chain ownership via Soroban smart contracts on the Stellar network.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                        GistPin Platform                            │
+│                        VertexChain Platform                            │
 ├─────────────────┬─────────────────────┬─────────────────────────────┤
 │   Frontend      │    Backend API      │     Blockchain              │
 │   (Next.js)     │    (NestJS)         │     (Soroban/Stellar)       │
@@ -132,7 +132,7 @@ Stellar Network (Soroban)
 ### Kubernetes Deployment
 
 ```
-Namespace: gistpin
+Namespace: vertexchain
 
 Deployments
 ├── backend (2-3 replicas, HPA)

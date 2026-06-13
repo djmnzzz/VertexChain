@@ -11,28 +11,28 @@
 
 ```bash
 # Identify top CPU consumers
-kubectl top pods -n gistpin --sort-by=cpu
+kubectl top pods -n vertexchain --sort-by=cpu
 
 # Check recent deployments
-kubectl rollout history deployment/gistpin-backend
+kubectl rollout history deployment/vertexchain-backend
 
 # Inspect pod logs for hot loops
-kubectl logs -n gistpin -l app=gistpin-backend --tail=100
+kubectl logs -n vertexchain -l app=vertexchain-backend --tail=100
 ```
 
 ## Resolution
 
 1. **Scale out** if load-driven:
    ```bash
-   kubectl scale deployment/gistpin-backend --replicas=5
+   kubectl scale deployment/vertexchain-backend --replicas=5
    ```
 2. **Rollback** if caused by a bad deploy:
    ```bash
-   kubectl rollout undo deployment/gistpin-backend
+   kubectl rollout undo deployment/vertexchain-backend
    ```
 3. **Kill runaway pod** if isolated:
    ```bash
-   kubectl delete pod <pod-name> -n gistpin
+   kubectl delete pod <pod-name> -n vertexchain
    ```
 
 ## Escalation

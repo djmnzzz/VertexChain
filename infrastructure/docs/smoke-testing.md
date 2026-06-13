@@ -1,6 +1,6 @@
 # Smoke Testing
 
-Quick validation tests to confirm GistPin infrastructure is healthy after a deployment.
+Quick validation tests to confirm VertexChain infrastructure is healthy after a deployment.
 
 ## Scripts
 
@@ -16,10 +16,10 @@ Quick validation tests to confirm GistPin infrastructure is healthy after a depl
 bash infrastructure/scripts/smoke-tests.sh
 
 # Run against a specific environment
-BASE_URL=https://staging.gistpin.io bash infrastructure/scripts/smoke-tests.sh
+BASE_URL=https://staging.vertexchain.io bash infrastructure/scripts/smoke-tests.sh
 
 # Validate k8s services in a namespace
-NAMESPACE=gistpin bash infrastructure/scripts/validate-services.sh
+NAMESPACE=vertexchain bash infrastructure/scripts/validate-services.sh
 ```
 
 ## Configuration
@@ -28,7 +28,7 @@ NAMESPACE=gistpin bash infrastructure/scripts/validate-services.sh
 |----------|---------|-------------|
 | `BASE_URL` | `http://localhost:3000` | Base URL for health endpoint checks |
 | `DATABASE_URL` | _(empty)_ | PostgreSQL connection string for DB check |
-| `NAMESPACE` | `gistpin` | Kubernetes namespace for service validation |
+| `NAMESPACE` | `vertexchain` | Kubernetes namespace for service validation |
 
 ## Checks performed
 
@@ -57,5 +57,5 @@ Add to your deployment workflow after applying manifests:
 - name: Validate k8s services
   run: bash infrastructure/scripts/validate-services.sh
   env:
-    NAMESPACE: gistpin
+    NAMESPACE: vertexchain
 ```

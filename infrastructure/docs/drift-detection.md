@@ -1,6 +1,6 @@
 # Infrastructure Drift Detection
 
-Detects manual changes to GistPin infrastructure by comparing actual state against Terraform and Kubernetes manifests.
+Detects manual changes to VertexChain infrastructure by comparing actual state against Terraform and Kubernetes manifests.
 
 ## Scripts
 

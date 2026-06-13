@@ -2,7 +2,7 @@
 
 ## Overview
 
-GistPin uses automated capacity analysis and 90-day usage forecasting to proactively scale infrastructure before resource constraints impact users.
+VertexChain uses automated capacity analysis and 90-day usage forecasting to proactively scale infrastructure before resource constraints impact users.
 
 ## Tools
 
@@ -41,13 +41,13 @@ HPA is configured for backend (2–10 replicas) and frontend (2–6 replicas). A
 ### EKS Vertical Scaling (node groups)
 Update `infrastructure/terraform/eks-node-groups.tf` and apply:
 ```bash
-terraform apply -target=aws_eks_node_group.gistpin_nodes
+terraform apply -target=aws_eks_node_group.vertexchain_nodes
 ```
 
 ### RDS Storage Auto-scaling
 Enabled by default with a 1 TB ceiling. To raise the ceiling:
 ```bash
-aws rds modify-db-instance --db-instance-identifier gistpin-db \
+aws rds modify-db-instance --db-instance-identifier vertexchain-db \
   --max-allocated-storage 2000
 ```
 

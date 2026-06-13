@@ -1,6 +1,6 @@
 # Cost Optimization
 
-Automated tooling to reduce cloud spend for GistPin infrastructure.
+Automated tooling to reduce cloud spend for VertexChain infrastructure.
 
 ## Scripts
 

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 NETWORK="${STELLAR_NETWORK:-testnet}"
-WASM_FILE="contracts/target/wasm32-unknown-unknown/release/gistpin_contracts.wasm"
+WASM_FILE="contracts/target/wasm32-unknown-unknown/release/vertexchain_contracts.wasm"
 CONTRACT_IDS_FILE="contract-ids.json"
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }

@@ -1,6 +1,6 @@
 # Network Traffic Analysis
 
-Automated network traffic monitoring for GistPin using AWS VPC Flow Logs.
+Automated network traffic monitoring for VertexChain using AWS VPC Flow Logs.
 
 ## Files
 
@@ -20,7 +20,7 @@ LOOKBACK_MINUTES=30 SLACK_WEBHOOK="https://hooks.slack.com/..." \
   bash infrastructure/scripts/analyze-traffic.sh
 
 # Different AWS region / log group
-AWS_REGION=eu-west-1 FLOW_LOG_GROUP=/aws/vpc/gistpin-eu \
+AWS_REGION=eu-west-1 FLOW_LOG_GROUP=/aws/vpc/vertexchain-eu \
   bash infrastructure/scripts/analyze-traffic.sh
 ```
 
@@ -30,7 +30,7 @@ AWS_REGION=eu-west-1 FLOW_LOG_GROUP=/aws/vpc/gistpin-eu \
 
 | Variable | Default | Description |
 |---|---|---|
-| `FLOW_LOG_GROUP` | `/aws/vpc/gistpin-flow-logs` | CloudWatch log group for VPC flow logs |
+| `FLOW_LOG_GROUP` | `/aws/vpc/vertexchain-flow-logs` | CloudWatch log group for VPC flow logs |
 | `LOOKBACK_MINUTES` | `60` | Minutes of history to analyse |
 | `RULES_FILE` | `infrastructure/security/traffic-rules.yml` | Traffic rules definition |
 | `REPORT_DIR` | `infrastructure/ci/reports` | Output directory for JSON reports |
@@ -76,7 +76,7 @@ Rules in `traffic-rules.yml` define expected `ACCEPT`/`REJECT` behaviour per por
 
 ## AWS Prerequisites
 
-1. Enable VPC Flow Logs on the GistPin VPC, publishing to CloudWatch Logs group `/aws/vpc/gistpin-flow-logs`.
+1. Enable VPC Flow Logs on the VertexChain VPC, publishing to CloudWatch Logs group `/aws/vpc/vertexchain-flow-logs`.
 2. Ensure the IAM role running the script has `logs:FilterLogEvents` permission on that log group.
 
 ## CI Integration
@@ -86,7 +86,7 @@ Rules in `traffic-rules.yml` define expected `ACCEPT`/`REJECT` behaviour per por
   run: bash infrastructure/scripts/analyze-traffic.sh
   env:
     AWS_REGION: us-east-1
-    FLOW_LOG_GROUP: /aws/vpc/gistpin-flow-logs
+    FLOW_LOG_GROUP: /aws/vpc/vertexchain-flow-logs
     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
   continue-on-error: true  # alert but don't block deploy
 ```

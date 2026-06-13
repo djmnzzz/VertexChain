@@ -1,6 +1,6 @@
 # Backup Testing
 
-Automated backup verification for GistPin's PostgreSQL database.
+Automated backup verification for VertexChain's PostgreSQL database.
 
 ## Scripts
 
@@ -19,7 +19,7 @@ Automated backup verification for GistPin's PostgreSQL database.
 ./infrastructure/scripts/test-backup.sh 20260601-020000
 
 # Restore to a named DB
-./infrastructure/scripts/restore-backup.sh latest gistpin_restore_test
+./infrastructure/scripts/restore-backup.sh latest vertexchain_restore_test
 ```
 
 ## What Gets Tested

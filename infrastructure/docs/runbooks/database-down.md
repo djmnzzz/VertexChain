@@ -3,7 +3,7 @@
 **Severity:** P1 | **Team:** Infrastructure + Backend
 
 ## Symptoms
-- `gistpin_db_up` Prometheus metric = 0
+- `vertexchain_db_up` Prometheus metric = 0
 - Backend returning 500 errors on all write endpoints
 - Alert: `DatabaseDown`
 
@@ -11,13 +11,13 @@
 
 ```bash
 # Check pod status
-kubectl get pods -n gistpin -l app=postgres
+kubectl get pods -n vertexchain -l app=postgres
 
 # Check logs
-kubectl logs -n gistpin -l app=postgres --tail=50
+kubectl logs -n vertexchain -l app=postgres --tail=50
 
 # Test connectivity from backend pod
-kubectl exec -n gistpin deploy/gistpin-backend -- \
+kubectl exec -n vertexchain deploy/vertexchain-backend -- \
   pg_isready -h postgres-service -p 5432
 ```
 
@@ -25,17 +25,17 @@ kubectl exec -n gistpin deploy/gistpin-backend -- \
 
 1. **Restart StatefulSet** (if pod is crashlooping):
    ```bash
-   kubectl rollout restart statefulset/postgres -n gistpin
+   kubectl rollout restart statefulset/postgres -n vertexchain
    kubectl rollout status statefulset/postgres --timeout=120s
    ```
 2. **Check PVC** (if storage issue):
    ```bash
-   kubectl get pvc -n gistpin
-   kubectl describe pvc postgres-data -n gistpin
+   kubectl get pvc -n vertexchain
+   kubectl describe pvc postgres-data -n vertexchain
    ```
 3. **Restore from backup** (last resort):
    ```bash
-   ./infrastructure/scripts/restore-backup.sh latest gistpin_prod
+   ./infrastructure/scripts/restore-backup.sh latest vertexchain_prod
    ```
 
 ## Escalation

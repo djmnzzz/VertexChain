@@ -1,6 +1,6 @@
 # Infrastructure Compliance Checks
 
-Automated compliance validation for GistPin covering CIS Benchmarks, GDPR, and PCI-DSS.
+Automated compliance validation for VertexChain covering CIS Benchmarks, GDPR, and PCI-DSS.
 
 ## Files
 

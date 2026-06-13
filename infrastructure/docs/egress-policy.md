@@ -1,13 +1,13 @@
 # Egress Network Policy
 
-Restrict outbound traffic from GistPin pods to prevent data exfiltration, block cloud metadata access, and enforce DNS egress rules.
+Restrict outbound traffic from VertexChain pods to prevent data exfiltration, block cloud metadata access, and enforce DNS egress rules.
 
 ## Architecture
 
 | Policy | Namespace | Scope | Purpose |
 |--------|-----------|-------|---------|
-| `egress-default-deny` | gistpin-dev, gistpin-staging, gistpin-prod | All pods | Default deny all outbound traffic |
-| `egress-allowlist` | gistpin-dev, gistpin-staging, gistpin-prod | All pods | Allow DNS, blocked metadata, HTTPS |
+| `egress-default-deny` | vertexchain-dev, vertexchain-staging, vertexchain-prod | All pods | Default deny all outbound traffic |
+| `egress-allowlist` | vertexchain-dev, vertexchain-staging, vertexchain-prod | All pods | Allow DNS, blocked metadata, HTTPS |
 | `egress-allowlist-backend` | All namespaces | Backend pods | Backend-specific DNS rules |
 | `egress-allowlist-frontend` | All namespaces | Frontend pods | Frontend-specific DNS rules |
 
@@ -37,15 +37,15 @@ kubectl apply -f infrastructure/k8s/network-policies/egress-allowlist.yaml
 Verify policies are active:
 
 ```bash
-kubectl get networkpolicy -n gistpin-prod
-kubectl describe networkpolicy egress-default-deny -n gistpin-prod
+kubectl get networkpolicy -n vertexchain-prod
+kubectl describe networkpolicy egress-default-deny -n vertexchain-prod
 ```
 
 ## Testing Egress Rules
 
 ```bash
-kubectl exec -n gistpin-prod deploy/backend-deployment -- curl -sI https://api.gistpin.app
-kubectl exec -n gistpin-prod deploy/backend-deployment -- curl -sI http://169.254.169.254/latest/meta-data/iam/security-credentials/
+kubectl exec -n vertexchain-prod deploy/backend-deployment -- curl -sI https://api.vertexchain.app
+kubectl exec -n vertexchain-prod deploy/backend-deployment -- curl -sI http://169.254.169.254/latest/meta-data/iam/security-credentials/
 ```
 
 ## Monitoring

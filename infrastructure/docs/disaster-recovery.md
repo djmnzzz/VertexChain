@@ -2,7 +2,7 @@
 
 ## Overview
 
-GistPin uses an active-passive DR setup across two AWS regions.
+VertexChain uses an active-passive DR setup across two AWS regions.
 
 | Parameter | Target |
 |-----------|--------|

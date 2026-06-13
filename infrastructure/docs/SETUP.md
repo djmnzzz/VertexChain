@@ -1,4 +1,4 @@
-# GistPin Setup Guide
+# VertexChain Setup Guide
 
 ## Table of Contents
 
@@ -37,8 +37,8 @@
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/PinSpace-Org/GistPin.git
-cd GistPin
+git clone https://github.com/PinSpace-Org/VertexChain.git
+cd VertexChain
 ```
 
 ### 2. Install Dependencies
@@ -72,7 +72,7 @@ NODE_ENV=development
 PORT=3000
 
 # Database
-DATABASE_URL=postgresql://gistpin:gistpin@localhost:5432/gistpin
+DATABASE_URL=postgresql://vertexchain:vertexchain@localhost:5432/vertexchain
 
 # Session
 SESSION_SECRET=your-secret-key-here
@@ -91,7 +91,7 @@ IPFS_API_URL=https://ipfs.infura.io
 
 # OpenTelemetry (optional)
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
-OTEL_SERVICE_NAME=gistpin-backend
+OTEL_SERVICE_NAME=vertexchain-backend
 ```
 
 #### Frontend Environment Variables
@@ -110,10 +110,10 @@ NEXT_PUBLIC_IPFS_GATEWAY=https://ipfs.infura.io
 
 ```bash
 # Start PostgreSQL locally (or use Docker Compose)
-docker run --name gistpin-postgres \
-  -e POSTGRES_USER=gistpin \
-  -e POSTGRES_PASSWORD=gistpin \
-  -e POSTGRES_DB=gistpin \
+docker run --name vertexchain-postgres \
+  -e POSTGRES_USER=vertexchain \
+  -e POSTGRES_PASSWORD=vertexchain \
+  -e POSTGRES_DB=vertexchain \
   -p 5432:5432 \
   -d postgres:16-alpine
 
@@ -219,28 +219,28 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 
 # Install or upgrade
-helm upgrade --install gistpin ./infrastructure/k8s/helm/gistpin \
-  --namespace gistpin --create-namespace \
+helm upgrade --install vertexchain ./infrastructure/k8s/helm/vertexchain \
+  --namespace vertexchain --create-namespace \
   --set backend.image.tag=sha-$(git rev-parse HEAD) \
   --set backend.env.SOROBAN_RPC_URL=https://soroban-mainnet.stellar.org \
-  -f infrastructure/k8s/helm/gistpin/values.prod.yaml
+  -f infrastructure/k8s/helm/vertexchain/values.prod.yaml
 ```
 
 ### 3. Verify Deployment
 
 ```bash
 # Check pods
-kubectl get pods -n gistpin
+kubectl get pods -n vertexchain
 
 # Check services
-kubectl get svc -n gistpin
+kubectl get svc -n vertexchain
 
 # Check ingress
-kubectl get ingress -n gistpin
+kubectl get ingress -n vertexchain
 
 # Port-forward for local testing
-kubectl port-forward svc/backend 3000:3000 -n gistpin
-kubectl port-forward svc/analytics 3001:3000 -n gistpin
+kubectl port-forward svc/backend 3000:3000 -n vertexchain
+kubectl port-forward svc/analytics 3001:3000 -n vertexchain
 ```
 
 ### 4. Configure TLS
@@ -303,7 +303,7 @@ EOF
 
 ```bash
 # Create database
-createdb gistpin
+createdb vertexchain
 
 # Run migrations
 cd Backend
@@ -317,24 +317,24 @@ npm run seed
 
 ```hcl
 # infrastructure/terraform/modules/database/main.tf
-resource "aws_db_instance" "gistpin" {
-  identifier           = "gistpin-${var.environment}"
+resource "aws_db_instance" "vertexchain" {
+  identifier           = "vertexchain-${var.environment}"
   engine               = "postgres"
   engine_version       = "16.3"
   instance_class       = "db.r6g.large"
   allocated_storage    = 100
   storage_encrypted    = true
 
-  db_name              = "gistpin"
-  username             = "gistpin"
+  db_name              = "vertexchain"
+  username             = "vertexchain"
   password             = random.db_password.result
 
-  db_subnet_group_name   = aws_db_subnet_group.gistpin.name
+  db_subnet_group_name   = aws_db_subnet_group.vertexchain.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
   backup_retention_period = 30
   skip_final_snapshot     = false
-  final_snapshot_identifier = "gistpin-${var.environment}-final"
+  final_snapshot_identifier = "vertexchain-${var.environment}-final"
 
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 
@@ -389,7 +389,7 @@ STELLAR_SECRET_KEY    # For contract interactions
 
 Pre-configured dashboards in `infrastructure/monitoring/grafana/dashboards/`:
 
-- GistPin API Overview
+- VertexChain API Overview
 - Database Performance
 - Soroban Blockchain Metrics
 - Infrastructure Health

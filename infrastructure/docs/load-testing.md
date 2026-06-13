@@ -1,6 +1,6 @@
 # Load Testing
 
-Continuous load testing for GistPin using k6 or Locust.
+Continuous load testing for VertexChain using k6 or Locust.
 
 ## Test Scenarios
 
@@ -27,10 +27,10 @@ Continuous load testing for GistPin using k6 or Locust.
 
 ```bash
 # k6 (default)
-BASE_URL=https://api.gistpin.io bash infrastructure/scripts/run-load-test.sh k6
+BASE_URL=https://api.vertexchain.io bash infrastructure/scripts/run-load-test.sh k6
 
 # Locust
-BASE_URL=https://api.gistpin.io bash infrastructure/scripts/run-load-test.sh locust
+BASE_URL=https://api.vertexchain.io bash infrastructure/scripts/run-load-test.sh locust
 ```
 
 ## Scheduled Runs

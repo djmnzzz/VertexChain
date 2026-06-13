@@ -1,6 +1,6 @@
 # Secret Rotation
 
-Zero-downtime automated rotation of GistPin secrets.
+Zero-downtime automated rotation of VertexChain secrets.
 
 ## Script
 
@@ -22,7 +22,7 @@ Zero-downtime automated rotation of GistPin secrets.
 2. Updates the secret in **AWS Secrets Manager**
 3. Updates the live system (DB user / cert-manager annotation)
 4. Triggers a **rolling restart** of affected pods (zero downtime)
-5. Writes an audit entry to `/var/log/gistpin/secret-rotation.log`
+5. Writes an audit entry to `/var/log/vertexchain/secret-rotation.log`
 
 ## Schedule
 

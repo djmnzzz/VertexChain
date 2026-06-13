@@ -1,6 +1,6 @@
 # Security Hardening
 
-Automated security hardening for GistPin infrastructure.
+Automated security hardening for VertexChain infrastructure.
 
 ## What It Does
 
@@ -20,7 +20,7 @@ bash infrastructure/scripts/harden-security.sh
 bash infrastructure/scripts/harden-security.sh infrastructure/security/hardening-config.yml
 ```
 
-Requires root for SSH and firewall changes. Set `NAMESPACE` env var to target a specific K8s namespace (default: `gistpin`).
+Requires root for SSH and firewall changes. Set `NAMESPACE` env var to target a specific K8s namespace (default: `vertexchain`).
 
 ## Configuration
 

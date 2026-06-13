@@ -1,6 +1,6 @@
 # Service Mesh Configuration
 
-Automated Istio service mesh setup for GistPin.
+Automated Istio service mesh setup for VertexChain.
 
 ## Scripts
 
@@ -18,7 +18,7 @@ Automated Istio service mesh setup for GistPin.
 
 ```bash
 # Apply full mesh configuration
-NAMESPACE=gistpin bash infrastructure/scripts/configure-mesh.sh
+NAMESPACE=vertexchain bash infrastructure/scripts/configure-mesh.sh
 
 # Apply a single manifest
 kubectl apply -f infrastructure/k8s/mesh-config/traffic-policy.yaml
@@ -28,7 +28,7 @@ kubectl apply -f infrastructure/k8s/mesh-config/traffic-policy.yaml
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `NAMESPACE` | `gistpin` | Kubernetes namespace to label for sidecar injection |
+| `NAMESPACE` | `vertexchain` | Kubernetes namespace to label for sidecar injection |
 | `MESH_CONFIG_DIR` | `infrastructure/k8s/mesh-config` | Directory of mesh manifests to apply |
 
 ## Features configured

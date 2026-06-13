@@ -35,15 +35,15 @@ build_ios() {
   echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
 
   # Build
-  xcodebuild -workspace ios/GistPin.xcworkspace \
-    -scheme GistPin \
+  xcodebuild -workspace ios/VertexChain.xcworkspace \
+    -scheme VertexChain \
     -configuration Release \
-    -archivePath ios/build/GistPin.xcarchive \
+    -archivePath ios/build/VertexChain.xcarchive \
     DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
     archive
 
   xcodebuild -exportArchive \
-    -archivePath ios/build/GistPin.xcarchive \
+    -archivePath ios/build/VertexChain.xcarchive \
     -exportPath ios/build \
     -exportOptionsPlist ios/ExportOptions.plist
 
@@ -54,7 +54,7 @@ upload_testflight() {
   echo "$APPLE_API_KEY_BASE64" | base64 -d > /tmp/AuthKey.p8
   xcrun altool --upload-app \
     --type ios \
-    --file ios/build/GistPin.ipa \
+    --file ios/build/VertexChain.ipa \
     --apiKey "$APPLE_API_KEY_ID" \
     --apiIssuer "$APPLE_API_ISSUER_ID" \
     --private-key /tmp/AuthKey.p8

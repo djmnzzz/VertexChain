@@ -2,7 +2,7 @@
 
 ## Scope
 
-This policy covers OS patches for EKS nodes, container base image updates, and RDS engine upgrades for all GistPin environments.
+This policy covers OS patches for EKS nodes, container base image updates, and RDS engine upgrades for all VertexChain environments.
 
 ## Patch Schedule
 
@@ -46,12 +46,12 @@ A pre-patch RDS snapshot is created automatically. To roll back:
 ```bash
 # Restore RDS from snapshot
 aws rds restore-db-instance-from-db-snapshot \
-  --db-instance-identifier gistpin-db-restored \
+  --db-instance-identifier vertexchain-db-restored \
   --db-snapshot-identifier <snapshot-id>
 
 # Roll back EKS nodes via node group update
-aws eks update-nodegroup-version --cluster-name gistpin \
-  --nodegroup-name gistpin-nodes --launch-template version=<previous>
+aws eks update-nodegroup-version --cluster-name vertexchain \
+  --nodegroup-name vertexchain-nodes --launch-template version=<previous>
 ```
 
 ## Compliance Tracking
@@ -60,4 +60,4 @@ Patch compliance is reported via AWS SSM Patch Manager. Targets:
 - **Compliance rate**: ≥ 98% of nodes patched within SLA
 - **Critical patch lag**: 0 nodes with unpatched critical CVEs > 24h
 
-Reports are generated automatically after each patch run and stored in S3 at `s3://gistpin-compliance/patches/`.
+Reports are generated automatically after each patch run and stored in S3 at `s3://vertexchain-compliance/patches/`.

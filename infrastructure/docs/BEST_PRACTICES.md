@@ -1,4 +1,4 @@
-# GistPin Best Practices
+# VertexChain Best Practices
 
 ## Table of Contents
 
@@ -206,8 +206,8 @@ async create(@Req() req) {
 // Production example
 app.enableCors({
   origin: [
-    'https://app.gistpin.io',
-    'https://admin.gistpin.io',
+    'https://app.vertexchain.io',
+    'https://admin.vertexchain.io',
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -271,7 +271,7 @@ app.use((req, res, next) => {
 - Sample based on environment (production: 10%, staging: 50%)
 
 ```typescript
-const tracer = trace.getTracer('gistpin-backend');
+const tracer = trace.getTracer('vertexchain-backend');
 
 async findPin(id: string): Promise<Pin> {
   return tracer.startActiveSpan('pins.findOne', async (span) => {
@@ -328,7 +328,7 @@ CMD ["node", "dist/main"]
 # Good - complete container spec
 containers:
   - name: backend
-    image: "gistpin-backend:sha-abc123"
+    image: "vertexchain-backend:sha-abc123"
     resources:
       requests:
         cpu: "100m"
@@ -359,8 +359,8 @@ containers:
 
 ```hcl
 # Good - properly tagged resource
-resource "aws_db_instance" "gistpin" {
-  identifier           = "gistpin-${var.environment}"
+resource "aws_db_instance" "vertexchain" {
+  identifier           = "vertexchain-${var.environment}"
   engine               = "postgres"
   instance_class       = "db.r6g.large"
   storage_encrypted    = true
@@ -368,7 +368,7 @@ resource "aws_db_instance" "gistpin" {
   tags = {
     Environment = var.environment
     ManagedBy   = "Terraform"
-    Service     = "gistpin-backend"
+    Service     = "vertexchain-backend"
     CostCenter  = "engineering"
   }
 }
@@ -601,10 +601,10 @@ describe('PinsController (e2e)', () => {
 
 ```yaml
 # Good alert rule - symptom-based
-alert: GistPinHighErrorRate
+alert: VertexChainHighErrorRate
 expr: |
-  sum(rate(http_requests_total{service="gistpin-backend", status=~"5.."}[5m]))
-  / sum(rate(http_requests_total{service="gistpin-backend"}[5m])) > 0.05
+  sum(rate(http_requests_total{service="vertexchain-backend", status=~"5.."}[5m]))
+  / sum(rate(http_requests_total{service="vertexchain-backend"}[5m])) > 0.05
 for: 5m
 annotations:
   summary: "High error rate detected"

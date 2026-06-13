@@ -10,26 +10,26 @@
 
 ```bash
 # Check rollout status
-kubectl rollout status deployment/gistpin-backend
+kubectl rollout status deployment/vertexchain-backend
 
 # Describe failing pods
-kubectl describe pod -n gistpin -l app=gistpin-backend
+kubectl describe pod -n vertexchain -l app=vertexchain-backend
 
 # Check recent events
-kubectl get events -n gistpin --sort-by='.lastTimestamp' | tail -20
+kubectl get events -n vertexchain --sort-by='.lastTimestamp' | tail -20
 ```
 
 ## Resolution
 
 1. **Rollback immediately** if production is impacted:
    ```bash
-   kubectl rollout undo deployment/gistpin-backend
-   kubectl rollout status deployment/gistpin-backend --timeout=60s
+   kubectl rollout undo deployment/vertexchain-backend
+   kubectl rollout status deployment/vertexchain-backend --timeout=60s
    ```
 2. **Fix and redeploy** after identifying root cause in logs/events.
 3. **Check image pull errors** — verify registry credentials:
    ```bash
-   kubectl get secret regcred -n gistpin
+   kubectl get secret regcred -n vertexchain
    ```
 
 ## Escalation

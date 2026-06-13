@@ -1,4 +1,4 @@
-# GistPin Troubleshooting Guide
+# VertexChain Troubleshooting Guide
 
 ## Quick Diagnostic Commands
 
@@ -9,12 +9,12 @@ docker compose logs backend
 docker compose logs postgres
 
 # Check service status (Kubernetes)
-kubectl get pods -n gistpin
-kubectl describe pod <pod-name> -n gistpin
-kubectl logs <pod-name> -n gistpin --tail=100
+kubectl get pods -n vertexchain
+kubectl describe pod <pod-name> -n vertexchain
+kubectl logs <pod-name> -n vertexchain --tail=100
 
 # Database connectivity
-pg_isready -h localhost -p 5432 -U gistpin
+pg_isready -h localhost -p 5432 -U vertexchain
 
 # Network connectivity
 curl -v http://localhost:3000/health
@@ -60,7 +60,7 @@ docker compose up postgres -d
 docker compose ps postgres
 
 # Verify connection
-psql postgresql://gistpin:gistpin@localhost:5432/gistpin -c "SELECT 1"
+psql postgresql://vertexchain:vertexchain@localhost:5432/vertexchain -c "SELECT 1"
 ```
 
 ### Issue: Migration fails with "relation already exists"
@@ -212,7 +212,7 @@ WHERE state = 'idle'
 pg_resetwal -f /var/lib/postgresql/data
 
 # Restore from backup
-pg_restore -d gistpin backup.dump
+pg_restore -d vertexchain backup.dump
 
 # Verify data integrity
 cd Backend
@@ -320,7 +320,7 @@ grep -r "registerInstrumentations" Backend/src/
 ```javascript
 // Ensure trace exporter is configured
 const sdk = new NodeSDK({
-  serviceName: 'gistpin-backend',
+  serviceName: 'vertexchain-backend',
   traceExporter: new OTLPTraceExporter({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
   }),
@@ -373,9 +373,9 @@ memory_ballast:
 
 **Diagnosis:**
 ```bash
-kubectl describe pod <pod-name> -n gistpin
-kubectl logs <pod-name> -n gistpin --previous
-kubectl get events -n gistpin --sort-by='.lastTimestamp'
+kubectl describe pod <pod-name> -n vertexchain
+kubectl logs <pod-name> -n vertexchain --previous
+kubectl get events -n vertexchain --sort-by='.lastTimestamp'
 ```
 
 **Common Causes:**
@@ -386,13 +386,13 @@ kubectl get events -n gistpin --sort-by='.lastTimestamp'
 
 2. **ConfigMap/Secret not found**
    ```bash
-   kubectl get configmap -n gistpin
-   kubectl get secret -n gistpin
+   kubectl get configmap -n vertexchain
+   kubectl get secret -n vertexchain
    ```
 
 3. **Port already in use**
    ```bash
-   kubectl exec <pod-name> -n gistpin -- netstat -tulpn
+   kubectl exec <pod-name> -n vertexchain -- netstat -tulpn
    ```
 
 ### Issue: Ingress not working
@@ -407,7 +407,7 @@ kubectl get events -n gistpin --sort-by='.lastTimestamp'
 kubectl get pods -n ingress-nginx
 
 # Check ingress status
-kubectl describe ingress gistpin -n gistpin
+kubectl describe ingress vertexchain -n vertexchain
 
 # Test connectivity
 kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8080:80
@@ -422,8 +422,8 @@ curl -v http://localhost:8080/
 **Diagnosis:**
 ```bash
 # Check HPA status
-kubectl get hpa -n gistpin
-kubectl describe hpa backend-hpa -n gistpin
+kubectl get hpa -n vertexchain
+kubectl describe hpa backend-hpa -n vertexchain
 
 # Verify metrics server is running
 kubectl get pods -n metrics-server
@@ -486,7 +486,7 @@ AND state = 'active';
 kill -USR2 <node-pid>
 
 # Monitor memory over time
-kubectl top pods -n gistpin --containers
+kubectl top pods -n vertexchain --containers
 
 # Check for event listener leaks
 grep -r "EventEmitter" Backend/src/ | grep "on(" | wc -l
@@ -525,7 +525,7 @@ if (typeof window !== 'undefined') {
 
 ```bash
 # Trigger immediate backup
-kubectl exec -n gistpin postgres-0 -- pg_dump -U gistpin gistpin > backup.sql
+kubectl exec -n vertexchain postgres-0 -- pg_dump -U vertexchain vertexchain > backup.sql
 
 # Point-in-time recovery
 # Restore to specific transaction
@@ -536,28 +536,28 @@ pg_restore --recovery-target-time="2024-01-15 10:30:00" backup.dump
 
 ```bash
 # Kubernetes rollback
-helm rollback gistpin -n gistpin
+helm rollback vertexchain -n vertexchain
 
 # Database rollback
 cd Backend
 npm run migration:revert
 
 # Verify rollback
-kubectl rollout status deployment/backend -n gistpin
+kubectl rollout status deployment/backend -n vertexchain
 ```
 
 ### Data Integrity Check
 
 ```bash
 # Verify all pins have valid geospatial data
-psql postgresql://gistpin:gistpin@localhost:5432/gistpin -c "
+psql postgresql://vertexchain:vertexchain@localhost:5432/vertexchain -c "
   SELECT id, location, ST_IsValid(location) 
   FROM pins 
   WHERE ST_IsValid(location) = false;
 "
 
 # Verify contract IDs match between DB and blockchain
-psql postgresql://gistpin:gistpin@localhost:5432/gistpin -c "
+psql postgresql://vertexchain:vertexchain@localhost:5432/vertexchain -c "
   SELECT contract_id, COUNT(*) 
   FROM gists 
   GROUP BY contract_id;
