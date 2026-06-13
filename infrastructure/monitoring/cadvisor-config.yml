@@ -1,4 +1,4 @@
-# cAdvisor configuration for GistPin container resource monitoring
+# cAdvisor configuration for VertexChain container resource monitoring
 cadvisor:
   # Collection interval
   housekeeping_interval: 10s
@@ -39,7 +39,7 @@ cadvisor:
       cpu: 300m
       memory: 400Mi
 
-  # Label filters — only track GistPin containers
+  # Label filters — only track VertexChain containers
   store_container_labels: true
   whitelisted_container_labels:
     - app

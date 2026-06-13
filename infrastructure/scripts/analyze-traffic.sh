@@ -6,7 +6,7 @@ cd "${REPO_ROOT}"
 
 RULES_FILE="${RULES_FILE:-infrastructure/security/traffic-rules.yml}"
 REPORT_DIR="${REPORT_DIR:-infrastructure/ci/reports}"
-FLOW_LOG_GROUP="${FLOW_LOG_GROUP:-/aws/vpc/gistpin-flow-logs}"
+FLOW_LOG_GROUP="${FLOW_LOG_GROUP:-/aws/vpc/vertexchain-flow-logs}"
 LOOKBACK_MINUTES="${LOOKBACK_MINUTES:-60}"
 SLACK_WEBHOOK="${SLACK_WEBHOOK:-}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
@@ -18,7 +18,7 @@ alert() {
   if [[ -n "${SLACK_WEBHOOK}" ]]; then
     curl -s -X POST "${SLACK_WEBHOOK}" \
       -H 'Content-type: application/json' \
-      --data "{\"text\":\"[GistPin Traffic Alert] ${msg}\"}" >/dev/null
+      --data "{\"text\":\"[VertexChain Traffic Alert] ${msg}\"}" >/dev/null
   fi
 }
 

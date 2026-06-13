@@ -2,7 +2,7 @@
 # Simulate network latency using tc (traffic control) on a target pod
 set -euo pipefail
 
-NAMESPACE="${1:-gistpin}"
+NAMESPACE="${1:-vertexchain}"
 DURATION="${2:-60}"
 LATENCY="${LATENCY:-200ms}"
 

@@ -1,6 +1,6 @@
-﻿# Elasticsearch configuration for GistPin centralized logging
-cluster.name: gistpin-logs
-node.name: gistpin-node-1
+﻿# Elasticsearch configuration for VertexChain centralized logging
+cluster.name: vertexchain-logs
+node.name: vertexchain-node-1
 network.host: 0.0.0.0
 http.port: 9200
 
@@ -11,5 +11,5 @@ discovery.type: single-node
 indices.memory.index_buffer_size: 20%
 
 # Log retention via ILM (managed separately)
-# Default index: gistpin-logs-*
+# Default index: vertexchain-logs-*
 # Retention: 30 days hot, 60 days warm, delete after 90 days

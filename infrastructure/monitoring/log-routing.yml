@@ -1,6 +1,6 @@
 routes:
   - name: backend-errors
-    match: "kubernetes.**gistpin-backend**"
+    match: "kubernetes.**vertexchain-backend**"
     conditions:
       - field: level
         operator: in
@@ -11,7 +11,7 @@ routes:
     priority: high
 
   - name: backend-info
-    match: "kubernetes.**gistpin-backend**"
+    match: "kubernetes.**vertexchain-backend**"
     conditions:
       - field: level
         operator: in
@@ -21,7 +21,7 @@ routes:
     priority: normal
 
   - name: frontend-logs
-    match: "kubernetes.**gistpin-frontend**"
+    match: "kubernetes.**vertexchain-frontend**"
     destinations:
       - elasticsearch
     priority: normal
@@ -48,7 +48,7 @@ destinations:
     type: elasticsearch
     host: "${ELASTICSEARCH_HOST:-elasticsearch}"
     port: 9200
-    index_prefix: gistpin
+    index_prefix: vertexchain
     retention_days: 30
 
   alertmanager:

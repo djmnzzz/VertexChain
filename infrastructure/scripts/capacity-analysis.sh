@@ -11,7 +11,7 @@ START_TIME=$(date -u -d "${LOOKBACK_DAYS} days ago" +%Y-%m-%dT%H:%M:%SZ 2>/dev/n
   || date -u -v-"${LOOKBACK_DAYS}"d +%Y-%m-%dT%H:%M:%SZ)
 END_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
-log "=== GistPin Capacity Analysis ==="
+log "=== VertexChain Capacity Analysis ==="
 log "Region: ${AWS_REGION} | Period: last ${LOOKBACK_DAYS} days"
 
 # EKS node CPU utilization
@@ -20,7 +20,7 @@ aws cloudwatch get-metric-statistics \
   --region "${AWS_REGION}" \
   --namespace ContainerInsights \
   --metric-name node_cpu_utilization \
-  --dimensions Name=ClusterName,Value=gistpin \
+  --dimensions Name=ClusterName,Value=vertexchain \
   --statistics Average Maximum \
   --period 86400 \
   --start-time "${START_TIME}" \
@@ -34,7 +34,7 @@ aws cloudwatch get-metric-statistics \
   --region "${AWS_REGION}" \
   --namespace ContainerInsights \
   --metric-name node_memory_utilization \
-  --dimensions Name=ClusterName,Value=gistpin \
+  --dimensions Name=ClusterName,Value=vertexchain \
   --statistics Average Maximum \
   --period 86400 \
   --start-time "${START_TIME}" \
@@ -50,7 +50,7 @@ for METRIC in FreeStorageSpace DatabaseConnections; do
     --region "${AWS_REGION}" \
     --namespace AWS/RDS \
     --metric-name "${METRIC}" \
-    --dimensions Name=DBInstanceIdentifier,Value=gistpin-db \
+    --dimensions Name=DBInstanceIdentifier,Value=vertexchain-db \
     --statistics Average Maximum \
     --period 86400 \
     --start-time "${START_TIME}" \
@@ -61,7 +61,7 @@ done
 
 # Current HPA status
 log "[4/4] Current HPA scaling status"
-kubectl get hpa -n gistpin 2>/dev/null | tee -a "${REPORT_FILE}" \
+kubectl get hpa -n vertexchain 2>/dev/null | tee -a "${REPORT_FILE}" \
   || log "kubectl not available, skipping HPA status"
 
 log ""

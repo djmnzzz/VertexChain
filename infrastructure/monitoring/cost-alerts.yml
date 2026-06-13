@@ -1,5 +1,5 @@
 groups:
-  - name: gistpin-cost-alerts
+  - name: vertexchain-cost-alerts
     rules:
       - alert: BudgetThresholdWarning
         expr: aws_cost_budget_utilization_percent > 80

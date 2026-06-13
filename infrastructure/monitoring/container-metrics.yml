@@ -1,4 +1,4 @@
-# Container metrics collection rules for GistPin
+# Container metrics collection rules for VertexChain
 metrics:
   cpu:
     - name: container_cpu_usage_seconds_total
@@ -65,7 +65,7 @@ metrics:
 alert_rules:
   - name: ContainerHighCPU
     expr: >
-      rate(container_cpu_usage_seconds_total{namespace="gistpin"}[5m]) /
+      rate(container_cpu_usage_seconds_total{namespace="vertexchain"}[5m]) /
       container_spec_cpu_quota * 100 > 90
     for: 5m
     severity: warning
@@ -73,20 +73,20 @@ alert_rules:
 
   - name: ContainerHighMemory
     expr: >
-      container_memory_working_set_bytes{namespace="gistpin"} /
+      container_memory_working_set_bytes{namespace="vertexchain"} /
       container_spec_memory_limit_bytes * 100 > 85
     for: 5m
     severity: warning
     message: "Container {{ $labels.container }} memory usage > 85%"
 
   - name: ContainerOOMKilled
-    expr: increase(container_memory_oom_events_total{namespace="gistpin"}[5m]) > 0
+    expr: increase(container_memory_oom_events_total{namespace="vertexchain"}[5m]) > 0
     for: 0m
     severity: critical
     message: "Container {{ $labels.container }} was OOM killed"
 
   - name: ContainerRestartLoop
-    expr: increase(kube_pod_container_status_restarts_total{namespace="gistpin"}[15m]) > 3
+    expr: increase(kube_pod_container_status_restarts_total{namespace="vertexchain"}[15m]) > 3
     for: 0m
     severity: critical
     message: "Container {{ $labels.container }} restarting frequently"

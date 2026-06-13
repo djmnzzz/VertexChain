@@ -1,7 +1,7 @@
-# Synthetic monitoring configuration for GistPin
+# Synthetic monitoring configuration for VertexChain
 global:
-  base_url: "${BASE_URL:-https://api.gistpin.io}"
-  frontend_url: "${FRONTEND_URL:-https://gistpin.io}"
+  base_url: "${BASE_URL:-https://api.vertexchain.io}"
+  frontend_url: "${FRONTEND_URL:-https://vertexchain.io}"
   timeout_ms: 10000
   retry_count: 2
   retry_delay_ms: 1000

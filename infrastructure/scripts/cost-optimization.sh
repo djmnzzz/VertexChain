@@ -7,7 +7,7 @@ REPORT_FILE="/tmp/cost-optimization-$(date +%Y%m%d).txt"
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
-log "=== GistPin Cost Optimization Report ==="
+log "=== VertexChain Cost Optimization Report ==="
 log "Region: ${AWS_REGION} | Dry-run: ${DRY_RUN}"
 echo "" > "${REPORT_FILE}"
 

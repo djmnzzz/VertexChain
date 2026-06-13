@@ -4,7 +4,7 @@ Logging, metrics collection, and alerting configurations.
 
 ## Overview
 
-Observability stack for monitoring GistPin in production.
+Observability stack for monitoring VertexChain in production.
 
 ## Contents
 

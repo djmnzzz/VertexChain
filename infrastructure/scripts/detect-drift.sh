@@ -80,7 +80,7 @@ send_alert() {
   if [[ -n "${SLACK_WEBHOOK}" ]]; then
     curl -s -X POST "${SLACK_WEBHOOK}" \
       -H 'Content-type: application/json' \
-      --data "{\"text\":\"[GistPin Drift] ${message}\"}" >/dev/null
+      --data "{\"text\":\"[VertexChain Drift] ${message}\"}" >/dev/null
   fi
 }
 

@@ -4,7 +4,7 @@
 set -euo pipefail
 
 MESH_CONFIG_DIR="${MESH_CONFIG_DIR:-infrastructure/k8s/mesh-config}"
-NAMESPACE="${NAMESPACE:-gistpin}"
+NAMESPACE="${NAMESPACE:-vertexchain}"
 
 log() { echo "[$(date -u +%H:%M:%S)] $*"; }
 

@@ -4,7 +4,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-DOMAINS="${DOMAINS:-gistpin.io api.gistpin.io}"
+DOMAINS="${DOMAINS:-vertexchain.io api.vertexchain.io}"
 WARN_DAYS="${WARN_DAYS:-30}"
 CRITICAL_DAYS="${CRITICAL_DAYS:-7}"
 SLACK_WEBHOOK="${SLACK_WEBHOOK:-}"
@@ -34,7 +34,7 @@ send_alert() {
   if [[ -n "${SLACK_WEBHOOK}" ]]; then
     curl -s -X POST "${SLACK_WEBHOOK}" \
       -H 'Content-type: application/json' \
-      --data "{\"text\":\"[GistPin SSL Alert] ${message}\"}" >/dev/null
+      --data "{\"text\":\"[VertexChain SSL Alert] ${message}\"}" >/dev/null
   fi
 }
 

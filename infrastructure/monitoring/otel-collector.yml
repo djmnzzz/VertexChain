@@ -20,16 +20,16 @@ receivers:
   prometheus:
     config:
       scrape_configs:
-        - job_name: "gistpin-collector"
+        - job_name: "vertexchain-collector"
           scrape_interval: 15s
           static_configs:
             - targets: ["localhost:8888"]
 
   filelog:
     include:
-      - /var/log/gistpin/*.log
+      - /var/log/vertexchain/*.log
     exclude:
-      - /var/log/gistpin/debug.log
+      - /var/log/vertexchain/debug.log
     operators:
       - type: regex_parser
         regex: '(?P<timestamp>[^ ]+) (?P<severity>[^ ]+) (?P<body>.*)'
@@ -78,7 +78,7 @@ exporters:
 
   loki:
     endpoint: "http://loki:3100/loki/api/v1/push"
-    tenant_id: "gistpin"
+    tenant_id: "vertexchain"
     timeout: 10s
     retry_on_failure:
       enabled: true

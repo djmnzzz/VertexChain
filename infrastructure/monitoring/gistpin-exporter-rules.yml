@@ -1,10 +1,10 @@
-# Prometheus alert rules — GistPin custom exporters
+# Prometheus alert rules — VertexChain custom exporters
 # Reference this file in prometheus.yml rule_files section
 groups:
-  - name: gistpin-exporters
+  - name: vertexchain-exporters
     rules:
       - alert: GistCreationRateLow
-        expr: rate(gistpin_gists_total[5m]) < 0.1
+        expr: rate(vertexchain_gists_total[5m]) < 0.1
         for: 10m
         labels:
           severity: warning
@@ -14,7 +14,7 @@ groups:
           description: "Gist creation rate is {{ $value }} gists/min — may indicate an issue."
 
       - alert: GistCreationRateHigh
-        expr: rate(gistpin_gists_total[5m]) > 100
+        expr: rate(vertexchain_gists_total[5m]) > 100
         for: 5m
         labels:
           severity: info
@@ -24,7 +24,7 @@ groups:
           description: "Gist creation rate is {{ $value }} gists/min — verify this is expected traffic."
 
       - alert: SorobanTxFailureRateHigh
-        expr: rate(gistpin_soroban_transactions_total{status="failed"}[5m]) / rate(gistpin_soroban_transactions_total[5m]) > 0.1
+        expr: rate(vertexchain_soroban_transactions_total{status="failed"}[5m]) / rate(vertexchain_soroban_transactions_total[5m]) > 0.1
         for: 5m
         labels:
           severity: critical
@@ -34,7 +34,7 @@ groups:
           description: "Transaction failure rate is {{ $value | humanizePercentage }}."
 
       - alert: IPFSPinCountIncreaseRapid
-        expr: increase(gistpin_ipfs_total_pins[10m]) > 1000
+        expr: increase(vertexchain_ipfs_total_pins[10m]) > 1000
         for: 5m
         labels:
           severity: warning
@@ -44,7 +44,7 @@ groups:
           description: "IPFS pins increased by {{ $value }} in the last 10 minutes."
 
       - alert: DBConnectionPoolExhausted
-        expr: gistpin_db_pool_connections{state="active"} / (gistpin_db_pool_connections{state="active"} + gistpin_db_pool_connections{state="idle"}) > 0.9
+        expr: vertexchain_db_pool_connections{state="active"} / (vertexchain_db_pool_connections{state="active"} + vertexchain_db_pool_connections{state="idle"}) > 0.9
         for: 5m
         labels:
           severity: warning

@@ -1,4 +1,4 @@
-# Database query performance monitoring for GistPin
+# Database query performance monitoring for VertexChain
 slow_query_log:
   enabled: true
   threshold_ms: 100

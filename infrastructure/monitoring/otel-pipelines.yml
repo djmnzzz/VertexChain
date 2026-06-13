@@ -3,7 +3,7 @@ processors:
     actions:
       - action: insert
         key: service.namespace
-        value: "gistpin"
+        value: "vertexchain"
       - action: insert
         key: deployment.environment
         value: ${DEPLOY_ENV:-production}
@@ -34,16 +34,16 @@ processors:
     num_traces: 10000
     expected_new_traces_per_sec: 10
     policies:
-      - name: gistpin-error-policy
+      - name: vertexchain-error-policy
         type: status_code
         status_code: { status_codes: [ERROR] }
-      - name: gistpin-latency-policy
+      - name: vertexchain-latency-policy
         type: latency
         latency: { threshold_ms: 1500 }
-      - name: gistpin-random-sampling
+      - name: vertexchain-random-sampling
         type: probabilistic
         probabilistic: { sampling_percentage: 5.0 }
-      - name: gistpin-status-sampling
+      - name: vertexchain-status-sampling
         type: status_code
         status_code: { status_codes: [ERROR, UNSET] }
 
@@ -51,7 +51,7 @@ processors:
     metric_statements:
       - context: datapoint
         statements:
-          - set(attributes["service"], "gistpin-backend")
+          - set(attributes["service"], "vertexchain-backend")
           - set(resource.attributes["deployment.environment"], ${DEPLOY_ENV:-production})
 
     log_statements:
@@ -74,10 +74,10 @@ pipelines:
     exporters: [logging, jaeger, otlp]
     sampling_strategy: hybrid
     tail_sampling_policies:
-      - policy: gistpin-error-policy
-        policy: gistpin-latency-policy
-        policy: gistpin-random-sampling
-        policy: gistpin-status-sampling
+      - policy: vertexchain-error-policy
+        policy: vertexchain-latency-policy
+        policy: vertexchain-random-sampling
+        policy: vertexchain-status-sampling
     probabilistic_sample_rate: 0.1
     max_trace_duration: 30s
 
@@ -87,15 +87,15 @@ pipelines:
     metrics_filter:
       include:
         match_type: regexp
-        regex: "gistpin\\..*"
-        metric_namespace: "gistpin"
+        regex: "vertexchain\\..*"
+        metric_namespace: "vertexchain"
       exclude:
         match_type: strict
         metric_names:
           - process.runtime.gc.collections.total
       resource_attributes:
-        service.name: "gistpin-backend"
-        service.namespace: "gistpin"
+        service.name: "vertexchain-backend"
+        service.namespace: "vertexchain"
         deployment.environment: ${DEPLOY_ENV:-production}
 
   logs:
@@ -116,19 +116,19 @@ pipelines:
             regex: "^.*health\\scheck.*$"
 
 service_instances:
-  gistpin-backend:
+  vertexchain-backend:
     receivers: [otlp]
     exporters: [jaeger, prometheusremotewrite, loki]
     processors: [attributes, batch]
     pipelines: [traces as primary, metrics as primary, logs]
 
-  gistpin-frontend:
+  vertexchain-frontend:
     receivers: [otlp]
     exporters: [jaeger]
     processors: [attributes, probabilistic_sampler]
     pipelines: [traces]
 
-  gistpin-collector-self-monitoring:
+  vertexchain-collector-self-monitoring:
     receivers: [prometheus]
     exporters: [prometheusremotewrite]
     processors: [transform]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SERVICE_NAME="${1:-gistpin-service}"
+SERVICE_NAME="${1:-vertexchain-service}"
 TRIGGERS_FILE="infrastructure/ci/rollback-triggers.json"
 REPORT_FILE="infrastructure/ci/canary-report.json"
 

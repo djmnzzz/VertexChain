@@ -2,7 +2,7 @@
 # Simulate resource exhaustion (CPU/memory stress) on a target pod
 set -euo pipefail
 
-NAMESPACE="${1:-gistpin}"
+NAMESPACE="${1:-vertexchain}"
 DURATION="${2:-60}"
 
 echo "[resource-exhaustion] Running stress test in namespace '$NAMESPACE' for ${DURATION}s..."

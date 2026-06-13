@@ -3,22 +3,22 @@ uptime:
   check_interval: 60
 
 monitors:
-  - name: GistPin API Health
-    url: https://api.gistpin.com/health
+  - name: VertexChain API Health
+    url: https://api.vertexchain.com/health
     method: GET
     expected_status: 200
     regions: [us-east, eu-west, ap-southeast]
     alert_after: 2
 
-  - name: GistPin Frontend
-    url: https://gistpin.com
+  - name: VertexChain Frontend
+    url: https://vertexchain.com
     method: GET
     expected_status: 200
     regions: [us-east, eu-west]
     alert_after: 2
 
-  - name: GistPin API Ping
-    url: https://api.gistpin.com/ping
+  - name: VertexChain API Ping
+    url: https://api.vertexchain.com/ping
     method: GET
     expected_status: 200
     regions: [us-east]
@@ -30,7 +30,7 @@ response_time_thresholds:
 
 status_page:
   enabled: true
-  public_url: https://status.gistpin.com
+  public_url: https://status.vertexchain.com
   components:
     - API
     - Frontend

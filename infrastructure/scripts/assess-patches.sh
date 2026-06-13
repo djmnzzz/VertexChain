@@ -7,13 +7,13 @@ REPORT_FILE="/tmp/patch-assessment-$(date +%Y%m%d).txt"
 
 log() { echo "[$(date +%H:%M:%S)] $*" | tee -a "${REPORT_FILE}"; }
 
-log "=== GistPin Patch Assessment ==="
+log "=== VertexChain Patch Assessment ==="
 log "Region: ${AWS_REGION} | Environment: ${ENVIRONMENT}"
 
 # EC2 / EKS node patch compliance via SSM
 log "[1/4] EC2 node patch compliance (SSM)"
 aws ssm describe-instance-patch-states-for-patch-group \
-  --patch-group "gistpin-${ENVIRONMENT}" \
+  --patch-group "vertexchain-${ENVIRONMENT}" \
   --region "${AWS_REGION}" \
   --query 'InstancePatchStates[].[InstanceId,MissingCount,InstalledCount,FailedCount,LastNoRebootInstallOperationTime]' \
   --output table 2>/dev/null | tee -a "${REPORT_FILE}" \
@@ -21,7 +21,7 @@ aws ssm describe-instance-patch-states-for-patch-group \
 
 # Container image CVE scan via ECR
 log "[2/4] ECR image vulnerability scan results"
-for REPO in gistpin-backend gistpin-frontend; do
+for REPO in vertexchain-backend vertexchain-frontend; do
   log "  Repository: ${REPO}"
   LATEST_TAG=$(aws ecr describe-images \
     --repository-name "${REPO}" \
@@ -44,7 +44,7 @@ done
 log "[3/4] RDS engine version and pending maintenance"
 aws rds describe-db-instances \
   --region "${AWS_REGION}" \
-  --query 'DBInstances[?contains(DBInstanceIdentifier, `gistpin`)].[DBInstanceIdentifier,EngineVersion,PendingModifiedValues.EngineVersion,AutoMinorVersionUpgrade]' \
+  --query 'DBInstances[?contains(DBInstanceIdentifier, `vertexchain`)].[DBInstanceIdentifier,EngineVersion,PendingModifiedValues.EngineVersion,AutoMinorVersionUpgrade]' \
   --output table 2>/dev/null | tee -a "${REPORT_FILE}" || true
 
 aws rds describe-pending-maintenance-actions \

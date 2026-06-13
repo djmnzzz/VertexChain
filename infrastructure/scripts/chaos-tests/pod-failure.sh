@@ -2,7 +2,7 @@
 # Inject pod failure by deleting a random pod and validating recovery
 set -euo pipefail
 
-NAMESPACE="${1:-gistpin}"
+NAMESPACE="${1:-vertexchain}"
 DURATION="${2:-60}"
 
 echo "[pod-failure] Selecting a random pod in namespace '$NAMESPACE'..."

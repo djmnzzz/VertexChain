@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO_OWNER="${1:-PinSpace-Org}"
-REPO_NAME="${2:-GistPin}"
+REPO_NAME="${2:-VertexChain}"
 WORKFLOW_NAME="${3:-}"
 OUTPUT_FILE="infrastructure/monitoring/pipeline-stats-latest.json"
 

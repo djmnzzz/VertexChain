@@ -1,7 +1,7 @@
 {
-  "title": "GistPin Container Resources",
-  "uid": "gistpin-containers",
-  "tags": ["gistpin", "containers", "docker"],
+  "title": "VertexChain Container Resources",
+  "uid": "vertexchain-containers",
+  "tags": ["vertexchain", "containers", "docker"],
   "timezone": "browser",
   "refresh": "30s",
   "time": { "from": "now-1h", "to": "now" },
@@ -13,7 +13,7 @@
       "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "rate(container_cpu_usage_seconds_total{namespace=\"gistpin\",container!=\"\"}[5m]) * 100",
+          "expr": "rate(container_cpu_usage_seconds_total{namespace=\"vertexchain\",container!=\"\"}[5m]) * 100",
           "legendFormat": "{{ container }}"
         }
       ],
@@ -29,7 +29,7 @@
       "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "container_memory_working_set_bytes{namespace=\"gistpin\",container!=\"\"}",
+          "expr": "container_memory_working_set_bytes{namespace=\"vertexchain\",container!=\"\"}",
           "legendFormat": "{{ container }}"
         }
       ],
@@ -45,11 +45,11 @@
       "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "rate(container_network_receive_bytes_total{namespace=\"gistpin\"}[5m])",
+          "expr": "rate(container_network_receive_bytes_total{namespace=\"vertexchain\"}[5m])",
           "legendFormat": "rx {{ pod }}"
         },
         {
-          "expr": "rate(container_network_transmit_bytes_total{namespace=\"gistpin\"}[5m])",
+          "expr": "rate(container_network_transmit_bytes_total{namespace=\"vertexchain\"}[5m])",
           "legendFormat": "tx {{ pod }}"
         }
       ],
@@ -65,7 +65,7 @@
       "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "container_fs_usage_bytes{namespace=\"gistpin\",container!=\"\"}",
+          "expr": "container_fs_usage_bytes{namespace=\"vertexchain\",container!=\"\"}",
           "legendFormat": "{{ container }}"
         }
       ],
@@ -81,7 +81,7 @@
       "gridPos": { "x": 0, "y": 16, "w": 6, "h": 4 },
       "targets": [
         {
-          "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"gistpin\"}[1h]))",
+          "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"vertexchain\"}[1h]))",
           "legendFormat": "Restarts (1h)"
         }
       ],
@@ -105,7 +105,7 @@
       "gridPos": { "x": 6, "y": 16, "w": 6, "h": 4 },
       "targets": [
         {
-          "expr": "sum(increase(container_memory_oom_events_total{namespace=\"gistpin\"}[1h]))",
+          "expr": "sum(increase(container_memory_oom_events_total{namespace=\"vertexchain\"}[1h]))",
           "legendFormat": "OOM Kills (1h)"
         }
       ],

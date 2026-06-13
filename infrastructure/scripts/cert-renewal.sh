@@ -4,8 +4,8 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${REPO_ROOT}"
 
-DOMAIN="${DOMAIN:-gistpin.io}"
-EMAIL="${CERT_EMAIL:-admin@gistpin.io}"
+DOMAIN="${DOMAIN:-vertexchain.io}"
+EMAIL="${CERT_EMAIL:-admin@vertexchain.io}"
 CERT_DIR="${CERT_DIR:-/etc/letsencrypt/live/${DOMAIN}}"
 RENEW_THRESHOLD_DAYS="${RENEW_THRESHOLD_DAYS:-30}"
 WILDCARD="${WILDCARD:-false}"

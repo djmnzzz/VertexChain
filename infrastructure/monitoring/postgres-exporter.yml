@@ -1,6 +1,6 @@
-# postgres_exporter configuration for GistPin database monitoring
+# postgres_exporter configuration for VertexChain database monitoring
 auth_modules:
-  gistpin_db:
+  vertexchain_db:
     type: userpass
     userpass:
       username: "${POSTGRES_EXPORTER_USER:-postgres_exporter}"
@@ -11,7 +11,7 @@ auth_modules:
 connection:
   host: "${POSTGRES_HOST:-postgres}"
   port: 5432
-  dbname: "${POSTGRES_DB:-gistpin}"
+  dbname: "${POSTGRES_DB:-vertexchain}"
 
 # Metrics to collect
 metrics:

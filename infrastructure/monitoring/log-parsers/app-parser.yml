@@ -1,4 +1,4 @@
-# Parser rules for GistPin backend application logs
+# Parser rules for VertexChain backend application logs
 parsers:
   - name: nestjs-json
     type: json

@@ -2,7 +2,7 @@
 # Test failover by scaling down a deployment and validating recovery
 set -euo pipefail
 
-NAMESPACE="${1:-gistpin}"
+NAMESPACE="${1:-vertexchain}"
 DURATION="${2:-60}"
 DEPLOYMENT="${DEPLOYMENT:-backend}"
 

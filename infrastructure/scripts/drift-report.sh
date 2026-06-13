@@ -21,7 +21,7 @@ render_text() {
   k8s_count="$(jq '.kubernetes_drift | length' "${report}")"
 
   echo "========================================"
-  echo " GistPin Infrastructure Drift Report"
+  echo " VertexChain Infrastructure Drift Report"
   echo " Generated: ${ts}"
   echo "========================================"
   echo ""
@@ -49,7 +49,7 @@ render_markdown() {
   tf_count="$(jq '.terraform_drift | length' "${report}")"
   k8s_count="$(jq '.kubernetes_drift | length' "${report}")"
 
-  echo "# GistPin Infrastructure Drift Report"
+  echo "# VertexChain Infrastructure Drift Report"
   echo ""
   echo "**Generated:** ${ts}"
   echo ""

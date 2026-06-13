@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GistPin Gist metrics exporter — exposes Gist creation and interaction metrics on /metrics."""
+"""VertexChain Gist metrics exporter — exposes Gist creation and interaction metrics on /metrics."""
 
 import argparse
 import os
@@ -9,40 +9,40 @@ from prometheus_client import start_http_server, Gauge, Counter, Histogram
 
 # --- Prometheus metrics ---
 GISTS_TOTAL = Counter(
-    "gistpin_gists_total",
+    "vertexchain_gists_total",
     "Total gists created since exporter start",
     ["location", "category"],
 )
 GISTS_ACTIVE = Gauge(
-    "gistpin_gists_active",
+    "vertexchain_gists_active",
     "Currently active (non-expired) gists",
     ["location"],
 )
 GIST_CREATION_RATE = Gauge(
-    "gistpin_gist_creation_rate_per_minute",
+    "vertexchain_gist_creation_rate_per_minute",
     "Rolling creation rate (gists/min)",
 )
 GIST_LIFETIME = Histogram(
-    "gistpin_gist_lifetime_seconds",
+    "vertexchain_gist_lifetime_seconds",
     "Gist lifetime until expiry or deletion",
     buckets=[60, 300, 900, 1800, 3600, 7200, 14400, 86400],
 )
 GIST_INTERACTIONS = Counter(
-    "gistpin_gist_interactions_total",
+    "vertexchain_gist_interactions_total",
     "Total interactions (views, reactions, comments)",
     ["interaction_type"],
 )
 GISTS_BY_RADIUS = Histogram(
-    "gistpin_gist_radius_meters",
+    "vertexchain_gist_radius_meters",
     "Distance radius of gist visibility",
     buckets=[100, 500, 1000, 5000, 10000, 50000],
 )
 IPFS_PINS = Gauge(
-    "gistpin_ipfs_pins_active",
+    "vertexchain_ipfs_pins_active",
     "Active IPFS pins for gist content",
 )
 DB_CONNECTION_POOL = Gauge(
-    "gistpin_db_pool_connections",
+    "vertexchain_db_pool_connections",
     "Database connection pool usage",
     ["state"],
 )
@@ -118,7 +118,7 @@ def collect_gist_rate():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="GistPin Gist Metrics Exporter")
+    parser = argparse.ArgumentParser(description="VertexChain Gist Metrics Exporter")
     parser.add_argument("--port", type=int, default=9101, help="Metrics HTTP port")
     parser.add_argument("--interval", type=int, default=30, help="Collection interval in seconds")
     parser.add_argument("--db-url", default=os.environ.get("DATABASE_URL", ""),
@@ -133,7 +133,7 @@ def main():
 
     # Start metrics HTTP server
     start_http_server(args.port)
-    print(f"GistPin Gist exporter listening on :{args.port}/metrics", file=sys.stderr)
+    print(f"VertexChain Gist exporter listening on :{args.port}/metrics", file=sys.stderr)
 
     # Background collection loop
     while True:

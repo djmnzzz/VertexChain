@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GistPin Soroban / Stellar transaction metrics exporter."""
+"""VertexChain Soroban / Stellar transaction metrics exporter."""
 
 import argparse
 import os
@@ -16,48 +16,48 @@ from prometheus_client import start_http_server, Gauge, Counter, Histogram
 
 # --- Prometheus metrics ---
 SOROBAN_TX_TOTAL = Counter(
-    "gistpin_soroban_transactions_total",
+    "vertexchain_soroban_transactions_total",
     "Total Soroban smart-contract transactions",
     ["contract", "status"],
 )
 SOROBAN_TX_FEE = Histogram(
-    "gistpin_soroban_transaction_fee_stroops",
+    "vertexchain_soroban_transaction_fee_stroops",
     "Soroban transaction fee distribution",
     buckets=[100, 1000, 5000, 10000, 50000, 100000],
 )
 SOROBAN_TX_DURATION = Histogram(
-    "gistpin_soroban_transaction_duration_seconds",
+    "vertexchain_soroban_transaction_duration_seconds",
     "Soroban transaction confirmation latency",
     buckets=[0.1, 0.5, 1, 2, 5, 10, 30],
 )
 SOROBAN_CONTRACT_CALLS = Counter(
-    "gistpin_soroban_contract_calls_total",
+    "vertexchain_soroban_contract_calls_total",
     "Total Soroban contract function invocations",
     ["contract", "function"],
 )
 SOROBAN_CONTRACT_STATE = Gauge(
-    "gistpin_soroban_contract_state_bytes",
+    "vertexchain_soroban_contract_state_bytes",
     "Soroban contract ledger entry size in bytes",
     ["contract"],
 )
 SOROBAN_ACTIVE_ACCOUNTS = Gauge(
-    "gistpin_soroban_active_accounts",
-    "Active accounts interacting with GistPin contracts",
+    "vertexchain_soroban_active_accounts",
+    "Active accounts interacting with VertexChain contracts",
 )
 SOROBAN_LEDGER_SEQUENCE = Gauge(
-    "gistpin_soroban_ledger_sequence",
+    "vertexchain_soroban_ledger_sequence",
     "Current Stellar ledger sequence number",
 )
 IPFS_PIN_COUNT = Gauge(
-    "gistpin_ipfs_total_pins",
-    "Total IPFS pins managed by GistPin",
+    "vertexchain_ipfs_total_pins",
+    "Total IPFS pins managed by VertexChain",
 )
 IPFS_PIN_SIZE = Gauge(
-    "gistpin_ipfs_total_pinned_bytes",
+    "vertexchain_ipfs_total_pinned_bytes",
     "Total bytes pinned on IPFS",
 )
 IPFS_BANDWIDTH = Counter(
-    "gistpin_ipfs_bandwidth_bytes_total",
+    "vertexchain_ipfs_bandwidth_bytes_total",
     "Total IPFS bandwidth usage",
     ["direction"],
 )
@@ -67,9 +67,9 @@ HORIZON_URL = os.environ.get("STELLAR_HORIZON_URL", "https://horizon-testnet.ste
 
 # Contract IDs (32-byte hex) — replace with deployed contract addresses
 CONTRACT_IDS = {
-    "gistpin-registry": os.environ.get("GISTPIN_REGISTRY_CONTRACT", ""),
-    "gistpin-store": os.environ.get("GISTPIN_STORE_CONTRACT", ""),
-    "gistpin-rewards": os.environ.get("GISTPIN_REWARDS_CONTRACT", ""),
+    "vertexchain-registry": os.environ.get("GISTPIN_REGISTRY_CONTRACT", ""),
+    "vertexchain-store": os.environ.get("GISTPIN_STORE_CONTRACT", ""),
+    "vertexchain-rewards": os.environ.get("GISTPIN_REWARDS_CONTRACT", ""),
 }
 
 
@@ -93,7 +93,7 @@ def fetch_horizon_metrics():
 
 
 def fetch_contract_metrics():
-    """Fetch GistPin Soroban contract metrics from RPC."""
+    """Fetch VertexChain Soroban contract metrics from RPC."""
     for name, contract_id in CONTRACT_IDS.items():
         if not contract_id:
             continue
@@ -148,7 +148,7 @@ def fetch_ipfs_metrics():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="GistPin Soroban & IPFS Metrics Exporter")
+    parser = argparse.ArgumentParser(description="VertexChain Soroban & IPFS Metrics Exporter")
     parser.add_argument("--port", type=int, default=9102, help="Metrics HTTP port")
     parser.add_argument("--interval", type=int, default=30, help="Collection interval in seconds")
     args = parser.parse_args()
