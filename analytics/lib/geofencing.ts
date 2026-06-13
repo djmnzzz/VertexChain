@@ -53,7 +53,7 @@ export function computeRegionStats(gists: GistPoint[]): RegionStats {
   );
 }
 
-const STORAGE_KEY = 'gistpin-geo-regions';
+const STORAGE_KEY = 'vertexchain-geo-regions';
 
 export function loadRegions(): GeoRegion[] {
   if (typeof window === 'undefined') return [];

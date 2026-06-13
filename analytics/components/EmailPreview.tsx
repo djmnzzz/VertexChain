@@ -34,7 +34,7 @@ export default function EmailPreview() {
         >
           GP
         </div>
-        <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>GistPin Weekly Report</div>
+        <div style={{ fontSize: 28, fontWeight: 900, marginBottom: 8 }}>VertexChain Weekly Report</div>
         <div style={{ color: 'rgba(255,255,255,0.82)', fontSize: 15 }}>
           Your latest analytics summary is ready to review and share.
         </div>

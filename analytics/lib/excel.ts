@@ -37,7 +37,7 @@ function buildFilename() {
     .replace(/\.\d{3}Z$/, 'Z')
     .replace(/[:]/g, '-');
 
-  return `gistpin-analytics-${timestamp}.xlsx`;
+  return `vertexchain-analytics-${timestamp}.xlsx`;
 }
 
 function setColumnWidths(sheet: XLSX.WorkSheet, rows: CellValue[][]) {

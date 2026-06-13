@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'gistpin-notification-prefs';
+const STORAGE_KEY = 'vertexchain-notification-prefs';
 
 interface AlertPrefs {
   dailySummary: boolean;

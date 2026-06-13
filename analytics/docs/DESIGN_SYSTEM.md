@@ -1,8 +1,8 @@
-# GistPin Analytics — Design System
+# VertexChain Analytics — Design System
 
 ## Overview
 
-This document describes the visual language, component patterns, and utility tokens used across the GistPin Analytics application.
+This document describes the visual language, component patterns, and utility tokens used across the VertexChain Analytics application.
 
 ---
 

@@ -81,7 +81,7 @@ export function createAnalyticsJsonExport(): AnalyticsJsonExport {
     metadata: {
       timestamp: new Date().toISOString(),
       version: '1.0.0',
-      source: 'GistPin Analytics Dashboard',
+      source: 'VertexChain Analytics Dashboard',
     },
     sections: {
       overview: {

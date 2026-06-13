@@ -20,10 +20,10 @@ interface ShareCardGeneratorProps {
 }
 
 const DEFAULT_DATA: ShareCardData = {
-  title: 'GistPin Analytics',
+  title: 'VertexChain Analytics',
   metric: 'Total Gists',
   value: '24,891',
-  subtitle: 'Last 30 days · gistpin.io',
+  subtitle: 'Last 30 days · vertexchain.io',
 };
 
 export default function ShareCardGenerator({ data = DEFAULT_DATA }: ShareCardGeneratorProps) {
@@ -50,7 +50,7 @@ export default function ShareCardGenerator({ data = DEFAULT_DATA }: ShareCardGen
     // Logo / brand text
     ctx.fillStyle = '#ffffff';
     ctx.font = `bold ${h * 0.055}px Inter, sans-serif`;
-    ctx.fillText('GistPin', w * 0.05, h * 0.065);
+    ctx.fillText('VertexChain', w * 0.05, h * 0.065);
 
     // Main metric value
     ctx.fillStyle = '#a5b4fc';
@@ -103,7 +103,7 @@ export default function ShareCardGenerator({ data = DEFAULT_DATA }: ShareCardGen
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `gistpin-share-${platform}.png`;
+      a.download = `vertexchain-share-${platform}.png`;
       a.click();
       URL.revokeObjectURL(url);
       setDownloading(false);

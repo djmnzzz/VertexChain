@@ -16,17 +16,17 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export interface BenchmarkEntry {
   category: string;
-  gistpin: number;
+  vertexchain: number;
   industry: number;
 }
 
 const DEFAULT_DATA: BenchmarkEntry[] = [
-  { category: 'Engagement Rate', gistpin: 68, industry: 45 },
-  { category: 'Daily Active Users', gistpin: 52, industry: 61 },
-  { category: 'Retention (7d)', gistpin: 74, industry: 58 },
-  { category: 'Avg. Session (min)', gistpin: 4.2, industry: 3.1 },
-  { category: 'Posts / User', gistpin: 3.8, industry: 2.9 },
-  { category: 'Response Rate', gistpin: 41, industry: 55 },
+  { category: 'Engagement Rate', vertexchain: 68, industry: 45 },
+  { category: 'Daily Active Users', vertexchain: 52, industry: 61 },
+  { category: 'Retention (7d)', vertexchain: 74, industry: 58 },
+  { category: 'Avg. Session (min)', vertexchain: 4.2, industry: 3.1 },
+  { category: 'Posts / User', vertexchain: 3.8, industry: 2.9 },
+  { category: 'Response Rate', vertexchain: 41, industry: 55 },
 ];
 
 interface BenchmarkChartProps {
@@ -46,10 +46,10 @@ function BenchmarkChart({ entries = DEFAULT_DATA }: BenchmarkChartProps) {
     labels,
     datasets: [
       {
-        label: 'GistPin',
-        data: entries.map((e) => e.gistpin),
+        label: 'VertexChain',
+        data: entries.map((e) => e.vertexchain),
         backgroundColor: entries.map((e) =>
-          e.gistpin >= e.industry ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.45)'
+          e.vertexchain >= e.industry ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.45)'
         ),
         borderRadius: 4,
         borderSkipped: false,
@@ -94,7 +94,7 @@ function BenchmarkChart({ entries = DEFAULT_DATA }: BenchmarkChartProps) {
         cornerRadius: 8,
         callbacks: {
           afterBody: (items: TooltipItem<'bar'>[]) => {
-            const gp = items.find((i) => i.dataset.label === 'GistPin')?.raw as number | undefined;
+            const gp = items.find((i) => i.dataset.label === 'VertexChain')?.raw as number | undefined;
             const ind = items.find((i) => i.dataset.label === 'Industry Avg.')?.raw as number | undefined;
             if (gp !== undefined && ind !== undefined) {
               return [`Δ vs Industry: ${pctDiff(gp, ind)}`];
@@ -107,7 +107,7 @@ function BenchmarkChart({ entries = DEFAULT_DATA }: BenchmarkChartProps) {
   };
 
   return (
-    <ChartWrapper title="GistPin vs Industry Benchmarks">
+    <ChartWrapper title="VertexChain vs Industry Benchmarks">
       <Bar data={data} options={options} />
       {/* Percentage difference table */}
       <div className="mt-4 overflow-x-auto">
@@ -115,20 +115,20 @@ function BenchmarkChart({ entries = DEFAULT_DATA }: BenchmarkChartProps) {
           <thead>
             <tr className="border-b">
               <th className="text-left pb-1 pr-4">Metric</th>
-              <th className="text-right pb-1 pr-4">GistPin</th>
+              <th className="text-right pb-1 pr-4">VertexChain</th>
               <th className="text-right pb-1 pr-4">Industry</th>
               <th className="text-right pb-1">Δ</th>
             </tr>
           </thead>
           <tbody>
             {entries.map((e) => {
-              const diff = pctDiff(e.gistpin, e.industry);
-              const positive = e.gistpin >= e.industry;
+              const diff = pctDiff(e.vertexchain, e.industry);
+              const positive = e.vertexchain >= e.industry;
               return (
                 <tr key={e.category} className="border-b last:border-0">
                   <td className="py-1 pr-4">{e.category}</td>
                   <td className="text-right pr-4 font-medium text-gray-700 dark:text-gray-300">
-                    {e.gistpin}
+                    {e.vertexchain}
                   </td>
                   <td className="text-right pr-4">{e.industry}</td>
                   <td

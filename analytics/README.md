@@ -1,6 +1,6 @@
-# GistPin Analytics Dashboard
+# VertexChain Analytics Dashboard
 
-A data visualization dashboard for the GistPin platform, providing insights into gist activity, user engagement, and geographic distribution.
+A data visualization dashboard for the VertexChain platform, providing insights into gist activity, user engagement, and geographic distribution.
 
 ---
 
@@ -45,7 +45,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 Create a `.env.local` file in the `analytics/` directory:
 
 ```env
-# GistPin Backend API base URL
+# VertexChain Backend API base URL
 NEXT_PUBLIC_API_URL=http://localhost:3000
 
 # Optional: override mock data record count
@@ -148,7 +148,7 @@ State is synced to/from URL search params so ranges survive page refresh and are
 
 ## API Documentation
 
-The dashboard is designed to consume the GistPin REST API. The backend exposes:
+The dashboard is designed to consume the VertexChain REST API. The backend exposes:
 
 ### `GET /gists`
 

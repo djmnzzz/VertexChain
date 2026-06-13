@@ -177,7 +177,7 @@ export default function Layout({ children }: LayoutProps) {
 
   // Initialise dark mode from storage / system preference
   useEffect(() => {
-    const stored = localStorage.getItem('gistpin-theme');
+    const stored = localStorage.getItem('vertexchain-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const isDark = stored === 'dark' || (!stored && prefersDark);
     setDark(isDark);
@@ -193,7 +193,7 @@ export default function Layout({ children }: LayoutProps) {
     setDark((prev) => {
       const next = !prev;
       document.documentElement.classList.toggle('dark', next);
-      localStorage.setItem('gistpin-theme', next ? 'dark' : 'light');
+      localStorage.setItem('vertexchain-theme', next ? 'dark' : 'light');
       return next;
     });
   }, []);

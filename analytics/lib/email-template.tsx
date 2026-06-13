@@ -4,4 +4,4 @@ export const EMAIL_SUMMARY_CARDS = [
   { label: 'Engagement rate', value: '24.8%' },
 ] as const;
 
-export const DASHBOARD_URL = 'https://github.com/PinSpace-Org/GistPin';
+export const DASHBOARD_URL = 'https://github.com/PinSpace-Org/VertexChain';

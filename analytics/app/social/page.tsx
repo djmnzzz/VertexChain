@@ -55,10 +55,10 @@ const SHARE_OF_VOICE: Record<Platform, number> = {
 };
 
 const TOP_POSTS: TopPost[] = [
-  { platform: 'TikTok',    content: 'GistPin location drop challenge 🗺️',  likes: 48200, shares: 12400, comments: 3200, date: '2025-04-20' },
+  { platform: 'TikTok',    content: 'VertexChain location drop challenge 🗺️',  likes: 48200, shares: 12400, comments: 3200, date: '2025-04-20' },
   { platform: 'Instagram', content: 'Discover hidden gems near you ✨',      likes: 22100, shares: 4800,  comments: 1890, date: '2025-04-18' },
   { platform: 'Twitter',   content: 'New Stellar integration is live 🚀',    likes: 9800,  shares: 3200,  comments: 780,  date: '2025-04-15' },
-  { platform: 'LinkedIn',  content: 'How GistPin is redefining local comms', likes: 4200,  shares: 1100,  comments: 340,  date: '2025-04-12' },
+  { platform: 'LinkedIn',  content: 'How VertexChain is redefining local comms', likes: 4200,  shares: 1100,  comments: 340,  date: '2025-04-12' },
   { platform: 'TikTok',    content: 'Anonymous posting explained 🔒',        likes: 38900, shares: 9700,  comments: 2100, date: '2025-04-10' },
 ];
 

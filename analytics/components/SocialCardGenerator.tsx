@@ -75,7 +75,7 @@ function drawCard(
   ctx.font = `bold ${Math.round(width * 0.028)}px Arial`;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
-  ctx.fillText('GistPin Analytics', 100, 45);
+  ctx.fillText('VertexChain Analytics', 100, 45);
 
   // Template label (top-right)
   ctx.font = `${Math.round(width * 0.018)}px Arial`;
@@ -120,7 +120,7 @@ function drawCard(
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('Powered by GistPin Analytics', width / 2, height - 27);
+  ctx.fillText('Powered by VertexChain Analytics', width / 2, height - 27);
 }
 
 export default function SocialCardGenerator() {
@@ -141,7 +141,7 @@ export default function SocialCardGenerator() {
   function handleDownload() {
     if (!canvasRef.current) return;
     const link = document.createElement('a');
-    link.download = `gistpin-${templateId}-card.png`;
+    link.download = `vertexchain-${templateId}-card.png`;
     link.href = canvasRef.current.toDataURL('image/png');
     link.click();
   }

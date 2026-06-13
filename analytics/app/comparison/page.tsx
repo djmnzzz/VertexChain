@@ -71,7 +71,7 @@ function downloadPdf(rows: ComparisonRow[], leftLabel: string, rightLabel: strin
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(20);
-  pdf.text('GistPin Comparison Report', 14, 16);
+  pdf.text('VertexChain Comparison Report', 14, 16);
 
   pdf.setTextColor(15, 23, 42);
   pdf.setFontSize(11);

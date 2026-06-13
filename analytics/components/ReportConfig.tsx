@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-const STORAGE_KEY = 'gistpin-report-config';
+const STORAGE_KEY = 'vertexchain-report-config';
 const METRICS = [
   'Live gists',
   'New vs returning users',
@@ -23,7 +23,7 @@ interface ReportConfig {
 
 const defaultConfig: ReportConfig = {
   frequency: 'Weekly',
-  recipients: ['ops@gistpin.app', 'founders@gistpin.app'],
+  recipients: ['ops@vertexchain.app', 'founders@vertexchain.app'],
   metrics: ['Live gists', 'New vs returning users', 'Category distribution'],
 };
 
@@ -151,7 +151,7 @@ export default function ReportConfig() {
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addRecipient(); } }}
-                placeholder="team@gistpin.app"
+                placeholder="team@vertexchain.app"
                 style={{
                   flex: '1 1 260px',
                   borderRadius: 14,

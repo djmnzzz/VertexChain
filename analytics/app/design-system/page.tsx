@@ -45,7 +45,7 @@ export default function DesignSystemPage() {
         }}>Design System</div>
         <h1 style={{ margin: '0 0 6px', fontSize: 34 }}>Component showcase</h1>
         <p style={{ margin: 0, color: '#475569', fontSize: 15 }}>
-          Visual reference for GistPin Analytics UI components, tokens, and patterns.
+          Visual reference for VertexChain Analytics UI components, tokens, and patterns.
         </p>
       </div>
 
@@ -72,7 +72,7 @@ export default function DesignSystemPage() {
           {TYPOGRAPHY.map((t) => (
             <div key={t.label} style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
               <span style={{ fontSize: t.size, fontWeight: t.weight, lineHeight: 1.2 }}>
-                GistPin Analytics
+                VertexChain Analytics
               </span>
               <span style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'monospace' }}>{t.label}</span>
             </div>

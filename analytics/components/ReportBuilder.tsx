@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import GridLayout, { type Layout } from 'react-grid-layout';
 
-const STORAGE_KEY = 'gistpin-report-builder-layout';
+const STORAGE_KEY = 'vertexchain-report-builder-layout';
 const SHARE_PARAM = 'layout';
 
 type WidgetType = 'chart' | 'table' | 'kpi';

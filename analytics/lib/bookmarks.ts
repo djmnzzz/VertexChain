@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'gistpin-bookmarks';
+const STORAGE_KEY = 'vertexchain-bookmarks';
 const MAX_BOOKMARKS = 10;
 
 export interface Bookmark {

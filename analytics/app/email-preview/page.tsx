@@ -8,14 +8,14 @@ function isEmail(value: string) {
 }
 
 export default function EmailPreviewPage() {
-  const [recipient, setRecipient] = useState('team@gistpin.app');
+  const [recipient, setRecipient] = useState('team@vertexchain.app');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
 
   const mailtoHref = useMemo(() => {
-    const subject = encodeURIComponent('GistPin test analytics report');
+    const subject = encodeURIComponent('VertexChain test analytics report');
     const body = encodeURIComponent(
-      'Hi,\n\nThis is a mock test send for the GistPin analytics email report.\n\nOpen the dashboard: https://github.com/PinSpace-Org/GistPin',
+      'Hi,\n\nThis is a mock test send for the VertexChain analytics email report.\n\nOpen the dashboard: https://github.com/PinSpace-Org/VertexChain',
     );
     return `mailto:${recipient}?subject=${subject}&body=${body}`;
   }, [recipient]);

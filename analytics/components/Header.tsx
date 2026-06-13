@@ -9,7 +9,7 @@ export default function HeaderLogo({ expanded = true }: HeaderLogoProps) {
     <div className={`flex items-center gap-3 px-4 py-5 ${!expanded ? 'justify-center px-0' : ''}`}>
       <Image
         src="/logo.svg"
-        alt="GistPin logo"
+        alt="VertexChain logo"
         width={28}
         height={28}
         sizes="28px"
@@ -19,7 +19,7 @@ export default function HeaderLogo({ expanded = true }: HeaderLogoProps) {
       />
       {expanded && (
         <span className="text-base font-bold tracking-tight text-gray-900 dark:text-white">
-          GistPin
+          VertexChain
         </span>
       )}
     </div>

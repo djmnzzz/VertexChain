@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'gistpin-annotations';
+const STORAGE_KEY = 'vertexchain-annotations';
 
 export interface Annotation {
   id: string;

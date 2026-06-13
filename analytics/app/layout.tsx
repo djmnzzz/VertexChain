@@ -5,8 +5,8 @@ import Layout from '@/components/Layout';
 import Providers from '@/app/providers';
 
 export const metadata: Metadata = {
-  title: 'GistPin Analytics',
-  description: 'Analytics dashboard for the GistPin platform',
+  title: 'VertexChain Analytics',
+  description: 'Analytics dashboard for the VertexChain platform',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

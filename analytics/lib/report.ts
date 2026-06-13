@@ -20,7 +20,7 @@ function buildFilename() {
     .replace(/\.\d{3}Z$/, 'Z')
     .replace(/[:]/g, '-');
 
-  return `gistpin-analytics-report-${timestamp}.pdf`;
+  return `vertexchain-analytics-report-${timestamp}.pdf`;
 }
 
 export function getDashboardDateRange(days: number) {
@@ -51,7 +51,7 @@ export async function generatePdfReport(
   pdf.setTextColor(255, 255, 255);
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(24);
-  pdf.text('GistPin', margin, 16);
+  pdf.text('VertexChain', margin, 16);
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
   pdf.text('Analytics dashboard report', margin, 24);
