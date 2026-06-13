@@ -9,6 +9,8 @@ import {
 import { useCountAnimation } from '@/hooks/useCountAnimation';
 import { KPI_DATA, type KPICardProps } from '@/lib/kpi-data';
 
+export type { KPICardProps };
+
 export const KPICard = memo(function KPICard({
   title,
   value,
