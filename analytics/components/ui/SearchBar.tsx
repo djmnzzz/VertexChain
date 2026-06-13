@@ -152,7 +152,7 @@ export default function SearchBar({ open: controlledOpen, onClose }: SearchBarPr
         {/* Results */}
         {results.length > 0 && (
           <div style={{ maxHeight: 360, overflowY: 'auto', padding: '8px 0' }}>
-            {orderedTypes.map((type) => {
+            {ORDERED_TYPES.map((type) => {
               const items = groups[type];
               if (items.length === 0) return null;
               return (
