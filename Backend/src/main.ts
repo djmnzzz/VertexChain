@@ -4,6 +4,11 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import {
+  csrfCookieParser,
+  csrfErrorHandler,
+  csrfProtection,
+} from './common/middleware/csrf.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +23,10 @@ async function bootstrap() {
     credentials: true,
     maxAge: 86400,
   });
+
+  app.use(csrfCookieParser);
+  app.use(csrfProtection);
+  app.use(csrfErrorHandler);
 
   // Validation
   app.useGlobalPipes(

@@ -5,7 +5,20 @@ import { AppModule } from 'src/app.module';
 import { AllExceptionsFilter } from 'src/common/filters/all-exceptions.filter';
 
 describe('Gists (e2e)', () => {
+  jest.setTimeout(30000);
   let app: INestApplication;
+
+  async function getCsrfToken(server: any) {
+    const res = await request(server).get('/csrf-token');
+    const cookie = Array.isArray(res.headers['set-cookie'])
+      ? res.headers['set-cookie'].find((header: string) => header.startsWith('csrfToken='))
+      : undefined;
+
+    return {
+      token: res.body.csrfToken,
+      cookie,
+    };
+  }
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,9 +44,20 @@ describe('Gists (e2e)', () => {
   });
 
   describe('POST /gists', () => {
+    it('should reject POST /gists without CSRF token', async () => {
+      await request(app.getHttpServer())
+        .post('/gists')
+        .send({ content: 'e2e test gist', lat: 9.0579, lon: 7.4951 })
+        .expect(403);
+    });
+
     it('should create a gist and return 201 with full shape', async () => {
+      const csrf = await getCsrfToken(app.getHttpServer());
+
       const res = await request(app.getHttpServer())
         .post('/gists')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
         .send({ content: 'e2e test gist', lat: 9.0579, lon: 7.4951 })
         .expect(201);
 
@@ -51,8 +75,12 @@ describe('Gists (e2e)', () => {
     });
 
     it('should return 400 when lat is out of range', async () => {
+      const csrf = await getCsrfToken(app.getHttpServer());
+
       const res = await request(app.getHttpServer())
         .post('/gists')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
         .send({ content: 'bad lat', lat: 999, lon: 7.4951 })
         .expect(400);
 
@@ -61,8 +89,12 @@ describe('Gists (e2e)', () => {
     });
 
     it('should return 400 when content exceeds 280 characters', async () => {
+      const csrf = await getCsrfToken(app.getHttpServer());
+
       const res = await request(app.getHttpServer())
         .post('/gists')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
         .send({ content: 'x'.repeat(281), lat: 9.0579, lon: 7.4951 })
         .expect(400);
 
@@ -70,21 +102,36 @@ describe('Gists (e2e)', () => {
     });
 
     it('should return 400 when required fields are missing', async () => {
+      const csrf = await getCsrfToken(app.getHttpServer());
+
       await request(app.getHttpServer())
         .post('/gists')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
         .send({ content: 'missing coords' })
         .expect(400);
     });
 
     it('should reject unknown fields (whitelist)', async () => {
+      const csrf = await getCsrfToken(app.getHttpServer());
+
       await request(app.getHttpServer())
         .post('/gists')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
         .send({ content: 'whitelist test', lat: 9.0579, lon: 7.4951, hack: 'injected' })
         .expect(400);
     });
   });
 
   describe('GET /gists', () => {
+    it('should return a fresh CSRF token cookie and token', async () => {
+      const res = await request(app.getHttpServer()).get('/csrf-token').expect(200);
+
+      expect(res.body).toMatchObject({ csrfToken: expect.any(String) });
+      expect(res.headers['set-cookie']?.[0]).toEqual(expect.stringContaining('csrfToken='));
+      expect(res.headers['set-cookie']?.[0]).toEqual(expect.stringContaining('Max-Age=3600'));
+    });
     it('should return paginated response with data and pagination', async () => {
       const res = await request(app.getHttpServer())
         .get('/gists')

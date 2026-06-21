@@ -8,6 +8,8 @@ import { IpfsModule } from './ipfs/ipfs.module';
 import { SorobanModule } from './soroban/soroban.module';
 import { GistsModule } from './gists/gists.module';
 import { HealthModule } from './health/health.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -29,7 +31,9 @@ import { HealthModule } from './health/health.module';
     GistsModule,
     HealthModule,
   ],
+  controllers: [AppController],
   providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
