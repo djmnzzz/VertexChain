@@ -388,4 +388,64 @@ By contributing to VertexChain, you agree that your contributions will be licens
 
 ---
 
+## PR template (suggested)
+
+Use the following checklist and template when opening PRs. Save it as `.github/PULL_REQUEST_TEMPLATE.md` to apply automatically.
+
+```
+## Summary
+Short description of the change.
+
+## Related Issue
+Closes #<issue-number> (if applicable)
+
+## Changes
+- Bullet list of changes
+
+## How to test
+Step-by-step instructions to verify changes
+
+## Checklist
+- [ ] Tests added/updated
+- [ ] Lint/format ran
+- [ ] Documentation updated (if applicable)
+```
+
+## Commit message format (Conventional Commits)
+
+We follow Conventional Commits to produce clear changelogs and enable tooling.
+
+Format:
+
+```
+<type>(<scope>): <short summary>
+
+[optional body]
+
+[optional footer: BREAKING CHANGE: ..., Closes #123]
+```
+
+Common types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`.
+
+Rules:
+- Keep the summary <= 72 characters.
+- Use present tense (e.g., "add", "fix").
+- Reference issues with `Closes #<number>` in the footer.
+
+Examples:
+- `feat(api): add user authentication endpoint`
+- `fix(ui): correct navigation dropdown focus`
+
+## Security & reporting vulnerabilities
+
+If you discover a security vulnerability, please do NOT open a public issue. Instead follow the repository's security policy:
+
+- See the repository `SECURITY.md` for the full policy: [SECURITY.md](SECURITY.md)
+- If you need to report privately and `SECURITY.md` lists a contact, use that contact (email or GitHub advisory process).
+- If no contact is listed, open a private GitHub security advisory or email the maintainers at the address listed in `SECURITY.md`.
+
+We will acknowledge reports promptly and work with you on a coordinated disclosure and fix.
+
+---
+
 Thank you for contributing to VertexChain! 🚀
