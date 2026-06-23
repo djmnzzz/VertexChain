@@ -8,6 +8,7 @@ import { IpfsModule } from './ipfs/ipfs.module';
 import { SorobanModule } from './soroban/soroban.module';
 import { GistsModule } from './gists/gists.module';
 import { HealthModule } from './health/health.module';
+import { CacheModule } from './cache/cache.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -30,6 +31,7 @@ import { AppService } from './app.service';
     SorobanModule,
     GistsModule,
     HealthModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [

@@ -170,4 +170,58 @@ describe('Gists (e2e)', () => {
       expect(res.body.services.postgis.status).toBe('ok');
     });
   });
+
+  describe('Cache behavior (graceful degradation)', () => {
+    it('should handle gist queries when Redis is unavailable', async () => {
+      // This test verifies that the application works even without Redis configured
+      // First query should work (cache miss, hits DB)
+      const res1 = await request(app.getHttpServer())
+        .get('/gists')
+        .query({ lat: 9.0579, lon: 7.4951, radius: 1000 })
+        .expect(200);
+
+      expect(res1.body).toMatchObject({
+        data: expect.any(Array),
+        pagination: {
+          count: expect.any(Number),
+          hasMore: expect.any(Boolean),
+        },
+      });
+
+      // Second identical query should also work (graceful degradation)
+      const res2 = await request(app.getHttpServer())
+        .get('/gists')
+        .query({ lat: 9.0579, lon: 7.4951, radius: 1000 })
+        .expect(200);
+
+      expect(res2.body).toMatchObject({
+        data: expect.any(Array),
+        pagination: {
+          count: expect.any(Number),
+          hasMore: expect.any(Boolean),
+        },
+      });
+    });
+
+    it('should handle findOne queries when Redis is unavailable', async () => {
+      // Create a gist first
+      const csrf = await getCsrfToken(app.getHttpServer());
+      const createRes = await request(app.getHttpServer())
+        .post('/gists')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
+        .send({ content: 'cache test gist', lat: 9.0579, lon: 7.4951 })
+        .expect(201);
+
+      const gistId = createRes.body.id;
+
+      // Query by ID should work without Redis
+      const res = await request(app.getHttpServer()).get(`/gists/${gistId}`).expect(200);
+
+      expect(res.body).toMatchObject({
+        id: gistId,
+        content: 'cache test gist',
+      });
+    });
+  });
 });
