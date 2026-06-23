@@ -28,6 +28,11 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./Backend
+          # docker/build-push-action resolves `file:` relative to the
+          # GitHub workspace (run from the repo root), so the path below
+          # lands on docker/backend.Dockerfile even though the build
+          # context is Backend/ — no `..` traversal needed.
+          file: docker/backend.Dockerfile
           target: build
           push: false
           cache-from: type=gha
@@ -50,6 +55,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./Backend
+          file: docker/backend.Dockerfile
           target: test
           push: false
           cache-from: type=gha
@@ -71,6 +77,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./Backend
+          file: docker/backend.Dockerfile
           target: production
           push: false
           load: true
@@ -123,6 +130,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./Backend
+          file: docker/backend.Dockerfile
           target: production
           push: true
           cache-from: type=gha
