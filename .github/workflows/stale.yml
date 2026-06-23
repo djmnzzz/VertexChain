@@ -1,0 +1,96 @@
+name: Mark Stale Issues and PRs
+
+# Keep the issue tracker and PR queue actionable by automatically aging
+# out items that have gone quiet. Items with no activity for 60 days are
+# labeled `stale` and warned; if they stay quiet for another 14 days they
+# are closed. ANY activity (comment, commit, label change, etc.) clears
+# the `stale` label and resets the clock, so this never closes something
+# people are still working on.
+#
+# Complements the other workflows in this directory (ci.yml builds/tests
+# PR code, pr-title-lint.yml validates PR title metadata): this one only
+# manages issue/PR *lifecycle*, never touches code.
+on:
+  schedule:
+    # Run once daily at 01:30 UTC. Off the top of the hour on purpose:
+    # GitHub delays scheduled runs during the high-load :00 window, so an
+    # odd minute starts more reliably and on time.
+    - cron: "30 1 * * *"
+  # Allow maintainers to trigger an on-demand sweep from the Actions tab
+  # (e.g. after adjusting exempt labels) without waiting for the schedule.
+  workflow_dispatch:
+
+# Cancel an in-flight scheduled sweep if a new one starts (e.g. a manual
+# dispatch overlapping the cron run). Stale processing is idempotent, so
+# superseding the older run avoids two passes mutating the same items.
+concurrency:
+  group: stale-${{ github.workflow }}
+  cancel-in-progress: true
+
+# Principle of least privilege: actions/stale needs to write issues and
+# pull requests to apply labels, post comments, and close items. Nothing
+# else is required.
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    name: Sweep stale issues and PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark and close stale items
+        uses: actions/stale@v9.1.0
+        with:
+          # --- Timing -------------------------------------------------
+          # 60 days of inactivity -> marked stale; 14 more days of
+          # inactivity after that -> closed. (-1 would disable a phase.)
+          days-before-stale: 60
+          days-before-close: 14
+
+          # --- Label applied to stale items ---------------------------
+          stale-issue-label: stale
+          stale-pr-label: stale
+
+          # --- Comments posted when an item is marked stale -----------
+          # Posted at the 60-day mark so the author has 14 days to
+          # respond before the item is closed.
+          stale-issue-message: >-
+            This issue has had no activity for 60 days and has been marked
+            `stale`. It will be closed in 14 days if there is no further
+            activity. To keep it open, leave a comment or remove the
+            `stale` label. Thank you for your contributions!
+          stale-pr-message: >-
+            This pull request has had no activity for 60 days and has been
+            marked `stale`. It will be closed in 14 days if there is no
+            further activity. To keep it open, push a commit, leave a
+            comment, or remove the `stale` label. Thank you for your
+            contributions!
+
+          # --- Comments posted when an item is actually closed --------
+          close-issue-message: >-
+            This issue was closed automatically because it remained `stale`
+            for 14 days with no further activity. Please feel free to
+            reopen it or open a new issue if this is still relevant.
+          close-pr-message: >-
+            This pull request was closed automatically because it remained
+            `stale` for 14 days with no further activity. Please feel free
+            to reopen it or open a new pull request if you wish to continue
+            this work.
+
+          # --- Exemptions ---------------------------------------------
+          # Items carrying any of these labels are never marked stale or
+          # closed. `security` is listed explicitly so security reports
+          # are never auto-closed (see Security Considerations in the
+          # task). Applies to both issues and PRs.
+          exempt-issue-labels: "pinned,security,epic"
+          exempt-pr-labels: "pinned,security,epic"
+
+          # --- Throughput / safety ------------------------------------
+          # Process newest items first so recently-aged items are handled
+          # predictably across daily runs.
+          ascending: false
+          # Cap API operations per run to stay within rate limits on a
+          # large backlog; remaining items are picked up the next day.
+          operations-per-run: 200
