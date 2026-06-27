@@ -10,6 +10,10 @@ on:
     paths:
       - 'Frontend/**'
 
+env:
+  # Fail the build if any single JS chunk exceeds this threshold (bytes)
+  BUNDLE_SIZE_THRESHOLD: 500000
+
 jobs:
   build:
     name: Build & Optimize Frontend
@@ -38,11 +42,12 @@ jobs:
         working-directory: Frontend
         run: npx tsc --noEmit
 
-      - name: Build Next.js application
+      - name: Build Next.js application with bundle analysis
         working-directory: Frontend
         run: npm run build
         env:
           NODE_ENV: production
+          ANALYZE: 'true'
 
       - name: Optimize assets
         run: bash infrastructure/ci/scripts/optimize-assets.sh
@@ -53,6 +58,36 @@ jobs:
           if [ -d ".next" ]; then
             find .next -name "*.map" | wc -l | xargs echo "Source maps generated:"
           fi
+
+      - name: Check bundle size threshold
+        working-directory: Frontend
+        run: |
+          echo "Checking bundle chunk sizes against threshold of ${BUNDLE_SIZE_THRESHOLD} bytes..."
+          FAILED=0
+          while IFS= read -r -d '' chunk; do
+            SIZE=$(wc -c < "$chunk")
+            if [ "$SIZE" -gt "$BUNDLE_SIZE_THRESHOLD" ]; then
+              echo "FAIL: $chunk is ${SIZE} bytes (limit: ${BUNDLE_SIZE_THRESHOLD})"
+              FAILED=1
+            else
+              echo "OK:   $chunk is ${SIZE} bytes"
+            fi
+          done < <(find .next/static/chunks -name "*.js" -not -name "*.map" -print0 2>/dev/null)
+          if [ "$FAILED" -eq 1 ]; then
+            echo "Bundle size check failed — one or more chunks exceed the ${BUNDLE_SIZE_THRESHOLD}-byte threshold."
+            exit 1
+          fi
+          echo "All chunks are within the size threshold."
+
+      - name: Upload bundle analysis report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bundle-analysis-${{ github.sha }}
+          path: |
+            Frontend/.next/analyze/
+            Frontend/.next/static/
+          retention-days: 30
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
