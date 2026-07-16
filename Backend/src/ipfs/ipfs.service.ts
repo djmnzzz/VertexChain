@@ -66,6 +66,27 @@ export class IpfsService {
     );
   }
 
+  /**
+   * Pins each distinct JSON payload once and returns results in input order.
+   * This keeps repeated observations in a burst on the same CID while allowing
+   * unrelated payloads to be pinned concurrently.
+   */
+  async pinJsonBatch(contents: Record<string, unknown>[]): Promise<PinResult[]> {
+    const pins = new Map<string, Promise<PinResult>>();
+
+    return Promise.all(
+      contents.map((content) => {
+        const key = createHash('sha256').update(JSON.stringify(content)).digest('hex');
+        let pin = pins.get(key);
+        if (!pin) {
+          pin = this.pinJson(content);
+          pins.set(key, pin);
+        }
+        return pin;
+      }),
+    );
+  }
+
   async getJson(cid: string): Promise<Record<string, unknown>> {
     if (this.devMode || cid.startsWith('mock_')) {
       return { cid, mock: true, retrieved_at: new Date().toISOString() };

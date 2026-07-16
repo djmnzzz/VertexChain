@@ -5,7 +5,11 @@ import { IpfsService } from './ipfs.service';
 describe('IpfsService', () => {
   let service: IpfsService;
 
-  const buildService = async (apiKey?: string, secretKey?: string, retries = 3): Promise<IpfsService> => {
+  const buildService = async (
+    apiKey?: string,
+    secretKey?: string,
+    retries = 3,
+  ): Promise<IpfsService> => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         IpfsService,
@@ -52,6 +56,19 @@ describe('IpfsService', () => {
       });
     });
 
+    describe('pinJsonBatch()', () => {
+      it('pins identical payloads once and preserves input order', async () => {
+        const pinSpy = jest.spyOn(service, 'pinJson');
+        const repeated = { content: 'same', lat: 9, lon: 7 };
+
+        const results = await service.pinJsonBatch([repeated, { content: 'other' }, repeated]);
+
+        expect(pinSpy).toHaveBeenCalledTimes(2);
+        expect(results[0]).toEqual(results[2]);
+        expect(results[0].cid).not.toEqual(results[1].cid);
+      });
+    });
+
     describe('getJson()', () => {
       it('returns a mock response for mock CIDs', async () => {
         const result = await service.getJson('mock_Qmabc123');
@@ -70,11 +87,15 @@ describe('IpfsService', () => {
 
     beforeEach(async () => {
       // Prevent the real require('@pinata/sdk') from failing in test env
-      jest.mock('@pinata/sdk', () => {
-        return jest.fn().mockImplementation(() => ({
-          pinJSONToIPFS: jest.fn().mockRejectedValue(new Error('Pinata network error')),
-        }));
-      }, { virtual: true });
+      jest.mock(
+        '@pinata/sdk',
+        () => {
+          return jest.fn().mockImplementation(() => ({
+            pinJSONToIPFS: jest.fn().mockRejectedValue(new Error('Pinata network error')),
+          }));
+        },
+        { virtual: true },
+      );
 
       // We won't call pinJson in real mode for getJson tests — just test getJson path
       // Service built with credentials but getJson for mock_* CIDs still returns mock

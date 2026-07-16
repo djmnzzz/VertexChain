@@ -16,6 +16,7 @@ describe('GistsController', () => {
   beforeEach(async () => {
     const mockGistsService = {
       create: jest.fn(),
+      createBatch: jest.fn(),
       findNearby: jest.fn(),
       findOne: jest.fn(),
     };
@@ -32,6 +33,22 @@ describe('GistsController', () => {
 
     controller = module.get<GistsController>(GistsController);
     service = module.get<GistsService>(GistsService);
+  });
+
+  describe('createBatch()', () => {
+    it('should pass the gist list to gistsService.createBatch', async () => {
+      const gists: CreateGistDto[] = [
+        { content: 'First', lat: 9.0579, lon: 7.4951 },
+        { content: 'Second', lat: 9.058, lon: 7.4952 },
+      ];
+      const result = gists.map((gist, index) =>
+        createMockGist({ id: `gist-${index}`, content: gist.content }),
+      );
+      jest.spyOn(service, 'createBatch').mockResolvedValueOnce(result);
+
+      await expect(controller.createBatch(gists)).resolves.toEqual(result);
+      expect(service.createBatch).toHaveBeenCalledWith(gists);
+    });
   });
 
   // Helper to create mock Gist objects

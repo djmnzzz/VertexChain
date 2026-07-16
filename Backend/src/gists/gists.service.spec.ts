@@ -50,7 +50,7 @@ describe('GistsService', () => {
         },
         {
           provide: IpfsService,
-          useValue: { pinJson: jest.fn() },
+          useValue: { pinJson: jest.fn(), pinJsonBatch: jest.fn() },
         },
         {
           provide: SorobanService,
@@ -73,6 +73,35 @@ describe('GistsService', () => {
     ipfsService = module.get(IpfsService);
     sorobanService = module.get(SorobanService);
     cacheService = module.get(CacheService);
+  });
+
+  describe('createBatch()', () => {
+    it('pins the batch once, publishes concurrently, and returns all gists in order', async () => {
+      const dtos: CreateGistDto[] = [
+        { content: 'First', lat: 9.0579, lon: 7.4951 },
+        { content: 'Second', lat: 9.058, lon: 7.4952, author: 'GABC' },
+      ];
+      geoService.encode.mockReturnValueOnce('cell-1').mockReturnValueOnce('cell-2');
+      ipfsService.pinJsonBatch.mockResolvedValue([
+        { cid: 'cid-1', mock: true },
+        { cid: 'cid-2', mock: true },
+      ]);
+      sorobanService.postGist
+        .mockResolvedValueOnce({ gistId: '1', txHash: 'tx-1', mock: true })
+        .mockResolvedValueOnce({ gistId: '2', txHash: 'tx-2', mock: true });
+      const stored = [mockGist(), { ...mockGist(), id: 'uuid-2', content: 'Second' }];
+      gistRepository.create.mockResolvedValueOnce(stored[0]).mockResolvedValueOnce(stored[1]);
+      cacheService.delPattern.mockResolvedValue();
+
+      await expect(service.createBatch(dtos)).resolves.toEqual(stored);
+      expect(ipfsService.pinJsonBatch).toHaveBeenCalledTimes(1);
+      expect(ipfsService.pinJsonBatch).toHaveBeenCalledWith([
+        expect.objectContaining({ content: 'First', location_cell: 'cell-1' }),
+        expect.objectContaining({ content: 'Second', location_cell: 'cell-2' }),
+      ]);
+      expect(sorobanService.postGist).toHaveBeenNthCalledWith(1, 'cell-1', 'cid-1', undefined);
+      expect(sorobanService.postGist).toHaveBeenNthCalledWith(2, 'cell-2', 'cid-2', 'GABC');
+    });
   });
 
   describe('create()', () => {

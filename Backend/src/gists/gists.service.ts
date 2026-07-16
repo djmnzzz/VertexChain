@@ -56,6 +56,60 @@ export class GistsService {
     return gist;
   }
 
+  async createBatch(dtos: CreateGistDto[]): Promise<Gist[]> {
+    const createdAt = new Date().toISOString();
+    const prepared = dtos.map((dto) => {
+      const content = stripHtml(dto.content);
+      const locationCell = this.geoService.encode(dto.lat, dto.lon);
+
+      return {
+        dto,
+        content,
+        locationCell,
+        payload: {
+          content,
+          lat: dto.lat,
+          lon: dto.lon,
+          location_cell: locationCell,
+          created_at: createdAt,
+        },
+      };
+    });
+
+    const pins = await this.ipfsService.pinJsonBatch(prepared.map(({ payload }) => payload));
+
+    const gists = await Promise.all(
+      prepared.map(async ({ dto, content, locationCell }, index) => {
+        const { cid } = pins[index];
+        const { gistId, txHash } = await this.sorobanService.postGist(
+          locationCell,
+          cid,
+          dto.author,
+        );
+
+        this.logger.log(`Batch gist posted → cell=${locationCell} cid=${cid} gistId=${gistId}`);
+
+        return this.gistRepository.create({
+          content,
+          lat: dto.lat,
+          lon: dto.lon,
+          location_cell: locationCell,
+          content_hash: cid,
+          stellar_gist_id: gistId,
+          tx_hash: txHash,
+        });
+      }),
+    );
+
+    await Promise.all(
+      [...new Map(dtos.map(({ lat, lon }) => [`${lat}:${lon}`, { lat, lon }])).values()].map(
+        ({ lat, lon }) => this.invalidateNearbyCache(lat, lon),
+      ),
+    );
+
+    return gists;
+  }
+
   async findNearby(query: QueryGistsDto): Promise<PaginatedResponse<Gist>> {
     // Don't cache paginated results (when cursor is present)
     if (query.cursor) {
