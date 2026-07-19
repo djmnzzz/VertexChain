@@ -2,6 +2,7 @@
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import '@/styles/leaflet-dark.css';
 import { icon } from 'leaflet';
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
