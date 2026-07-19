@@ -176,6 +176,26 @@ Content-Type: application/json
 5. Persist the record in Postgres
 6. Return the created gist
 
+### Correct a Gist
+
+```
+PATCH /gists/{id}
+Content-Type: application/json
+```
+
+```json
+{
+  "content": "Great street food here tonight (fixed typo)",
+  "author": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+}
+```
+
+Lets an author fix a typo shortly after posting — but only shortly after:
+
+- **60-second edit window.** Measured from the gist's `created_at`. Once elapsed, the endpoint returns `410 Gone` and the content is permanent.
+- **Author-gated.** `author` must match the gist's stored author exactly, or the endpoint returns `403 Forbidden`. Gists posted without an author (fully anonymous) can never be edited — there's no identity to verify against.
+- **Lineage preserved.** The prior IPFS CID is kept in `previous_cid` and the new content is re-pinned to IPFS, producing a fresh `content_hash`. Nothing is deleted — the edit is an append, not an overwrite of history.
+
 ---
 
 ## Database Model
@@ -195,6 +215,8 @@ Table: `gists`
 | `author_address` | `text` | Nullable — anonymous posts allowed |
 | `tx_hash` | `text` | Stellar transaction hash |
 | `created_at` | `timestamptz` | |
+| `previous_cid` | `text` | Nullable — IPFS CID this gist replaced, set on edit |
+| `edited_at` | `timestamptz` | Nullable — set on edit |
 
 ---
 

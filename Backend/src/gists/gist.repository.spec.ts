@@ -49,6 +49,18 @@ describeIntegration('GistRepository (integration)', () => {
       expect(Number(gist.lon)).toBeCloseTo(7.4951, 3);
       expect(gist.created_at).toBeDefined();
     });
+
+    it('should persist the author', async () => {
+      const gist = await repository.create({
+        content: 'authored gist',
+        lat: 9.0579,
+        lon: 7.4951,
+        content_hash: 'mock_test_cid',
+        author: 'GABC...XYZ',
+      });
+
+      expect(gist.author).toBe('GABC...XYZ');
+    });
   });
 
   describe('findNearby', () => {
@@ -140,6 +152,42 @@ describeIntegration('GistRepository (integration)', () => {
 
     it('should return null for a non-existent ID', async () => {
       const result = await repository.findByGistId('00000000-0000-0000-0000-000000000000');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('update', () => {
+    it('should update content and record CID lineage', async () => {
+      const created = await repository.create({
+        content: 'before edit',
+        lat: 9.0579,
+        lon: 7.4951,
+        content_hash: 'cid_before',
+        author: 'GABC...XYZ',
+      });
+
+      const editedAt = new Date();
+      const updated = await repository.update(created.id, {
+        content: 'after edit',
+        content_hash: 'cid_after',
+        previous_cid: 'cid_before',
+        edited_at: editedAt,
+      });
+
+      expect(updated).not.toBeNull();
+      expect(updated!.content).toBe('after edit');
+      expect(updated!.content_hash).toBe('cid_after');
+      expect(updated!.previous_cid).toBe('cid_before');
+      expect(updated!.edited_at).toBeDefined();
+    });
+
+    it('should return null for a non-existent ID', async () => {
+      const result = await repository.update('00000000-0000-0000-0000-000000000000', {
+        content: 'no-op',
+        content_hash: 'cid',
+        previous_cid: null,
+        edited_at: new Date(),
+      });
       expect(result).toBeNull();
     });
   });

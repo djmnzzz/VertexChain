@@ -7,6 +7,7 @@ import { GistsController } from './gists.controller';
 import { GistsService } from './gists.service';
 import { CreateGistDto } from './dto/create-gist.dto';
 import { QueryGistsDto } from './dto/query-gists.dto';
+import { UpdateGistDto } from './dto/update-gist.dto';
 import { Gist } from './entities/gist.entity';
 import { PaginatedResponse } from '../common/utils/pagination.helper';
 describe('GistsController', () => {
@@ -19,6 +20,7 @@ describe('GistsController', () => {
       createBatch: jest.fn(),
       findNearby: jest.fn(),
       findOne: jest.fn(),
+      update: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -60,6 +62,9 @@ describe('GistsController', () => {
       content_hash: 'abc123hash',
       stellar_gist_id: null,
       tx_hash: null,
+      author: null,
+      previous_cid: null,
+      edited_at: null,
       location: 'POINT(7.4951 9.0579)',
       created_at: new Date('2026-03-25T04:34:31.334Z'),
       ...overrides,
@@ -211,6 +216,49 @@ describe('GistsController', () => {
       jest.spyOn(service, 'findOne').mockRejectedValueOnce(error);
 
       await expect(controller.findOne(id)).rejects.toThrow('Gist not found');
+    });
+  });
+
+  describe('update()', () => {
+    it('should call gistsService.update with the id and DTO', async () => {
+      const id = '123e4567-e89b-12d3-a456-426614174000';
+      const dto: UpdateGistDto = { content: 'Fixed typo', author: 'GABC...XYZ' };
+      const result = createMockGist({ id, content: dto.content, author: dto.author });
+
+      jest.spyOn(service, 'update').mockResolvedValueOnce(result);
+
+      const response = await controller.update(id, dto);
+
+      expect(service.update).toHaveBeenCalledWith(id, dto);
+      expect(response).toEqual(result);
+    });
+
+    it('should propagate a 410 Gone error when the edit window has closed', async () => {
+      const id = '123e4567-e89b-12d3-a456-426614174000';
+      const dto: UpdateGistDto = { content: 'Fixed typo', author: 'GABC...XYZ' };
+      const error = Object.assign(new Error('Edit window has closed for this gist'), {
+        status: 410,
+      });
+
+      jest.spyOn(service, 'update').mockRejectedValueOnce(error);
+
+      await expect(controller.update(id, dto)).rejects.toThrow(
+        'Edit window has closed for this gist',
+      );
+    });
+
+    it('should propagate a forbidden error when the author does not match', async () => {
+      const id = '123e4567-e89b-12d3-a456-426614174000';
+      const dto: UpdateGistDto = { content: 'Fixed typo', author: 'GIMPOSTOR' };
+      const error = Object.assign(new Error('Only the original author may edit this gist'), {
+        status: 403,
+      });
+
+      jest.spyOn(service, 'update').mockRejectedValueOnce(error);
+
+      await expect(controller.update(id, dto)).rejects.toThrow(
+        'Only the original author may edit this gist',
+      );
     });
   });
 });

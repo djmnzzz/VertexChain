@@ -20,6 +20,14 @@ export interface CreateGistData {
   content_hash?: string;
   stellar_gist_id?: string;
   tx_hash?: string;
+  author?: string;
+}
+
+export interface UpdateGistData {
+  content: string;
+  content_hash: string;
+  previous_cid: string | null;
+  edited_at: Date;
 }
 
 export interface UpsertEventData {
@@ -44,26 +52,27 @@ export class GistRepository {
       content_hash = null,
       stellar_gist_id = null,
       tx_hash = null,
+      author = null,
     } = data;
 
     const result = await this.dataSource.query<Gist[]>(
       `
       INSERT INTO gists (
         content, location, location_cell,
-        content_hash, stellar_gist_id, tx_hash
+        content_hash, stellar_gist_id, tx_hash, author
       )
       VALUES (
         $1,
         ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography,
-        $4, $5, $6, $7
+        $4, $5, $6, $7, $8
       )
       RETURNING
         id, content, location_cell, content_hash,
-        stellar_gist_id, tx_hash, created_at,
+        stellar_gist_id, tx_hash, author, previous_cid, edited_at, created_at,
         ST_X(location::geometry) AS lon,
         ST_Y(location::geometry) AS lat
       `,
-      [content, lon, lat, location_cell, content_hash, stellar_gist_id, tx_hash],
+      [content, lon, lat, location_cell, content_hash, stellar_gist_id, tx_hash, author],
     );
 
     return result[0];
@@ -119,7 +128,7 @@ export class GistRepository {
       `
       SELECT
         id, content, location_cell, content_hash,
-        stellar_gist_id, tx_hash, created_at,
+        stellar_gist_id, tx_hash, author, previous_cid, edited_at, created_at,
         ST_X(location::geometry) AS lon,
         ST_Y(location::geometry) AS lat
       FROM gists
@@ -127,6 +136,28 @@ export class GistRepository {
       LIMIT 1
       `,
       [id],
+    );
+    return rows[0] ?? null;
+  }
+
+  async update(id: string, data: UpdateGistData): Promise<Gist | null> {
+    const { content, content_hash, previous_cid, edited_at } = data;
+
+    const rows = await this.dataSource.query<Gist[]>(
+      `
+      UPDATE gists
+      SET content = $2,
+          content_hash = $3,
+          previous_cid = $4,
+          edited_at = $5
+      WHERE id = $1
+      RETURNING
+        id, content, location_cell, content_hash,
+        stellar_gist_id, tx_hash, author, previous_cid, edited_at, created_at,
+        ST_X(location::geometry) AS lon,
+        ST_Y(location::geometry) AS lat
+      `,
+      [id, content, content_hash, previous_cid, edited_at],
     );
     return rows[0] ?? null;
   }

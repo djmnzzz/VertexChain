@@ -8,20 +8,28 @@ import { CacheService } from '../cache/cache.service';
 import { Gist } from './entities/gist.entity';
 import { CreateGistDto } from './dto/create-gist.dto';
 import { QueryGistsDto } from './dto/query-gists.dto';
+import { UpdateGistDto } from './dto/update-gist.dto';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 jest.mock('../common/utils/sanitize', () => ({
   stripHtml: jest.fn((text: string) => text),
 }));
 
-const mockGist = (): Gist => ({
+const mockGist = (overrides?: Partial<Gist>): Gist => ({
   id: 'uuid-1',
   content: 'Test gist',
   location_cell: 's1t7d8c',
   content_hash: 'mock_Qmabc123',
   stellar_gist_id: '1000',
   tx_hash: 'mock_tx_abc',
+  author: 'GABC',
+  previous_cid: null,
+  edited_at: null,
   location: null,
+  lat: 9.0579,
+  lon: 7.4951,
   created_at: new Date('2026-01-01T00:00:00.000Z'),
+  ...overrides,
 });
 
 describe('GistsService', () => {
@@ -42,6 +50,7 @@ describe('GistsService', () => {
             create: jest.fn(),
             findNearby: jest.fn(),
             findByGistId: jest.fn(),
+            update: jest.fn(),
           },
         },
         {
@@ -61,6 +70,7 @@ describe('GistsService', () => {
           useValue: {
             get: jest.fn(),
             set: jest.fn(),
+            del: jest.fn(),
             delPattern: jest.fn(),
           },
         },
@@ -263,6 +273,89 @@ describe('GistsService', () => {
       const result = await service.findOne('nonexistent');
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('update()', () => {
+    const dto: UpdateGistDto = { content: 'Fixed typo', author: 'GABC' };
+
+    it('throws NotFoundException when gist does not exist', async () => {
+      gistRepository.findByGistId.mockResolvedValue(null);
+
+      await expect(service.update('missing', dto)).rejects.toThrow(NotFoundException);
+    });
+
+    it('throws 410 Gone when the 60s edit window has closed', async () => {
+      const gist = mockGist({ created_at: new Date(Date.now() - 61_000) });
+      gistRepository.findByGistId.mockResolvedValue(gist);
+
+      await expect(service.update('uuid-1', dto)).rejects.toMatchObject({
+        status: 410,
+      });
+      expect(gistRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('throws ForbiddenException when author does not match', async () => {
+      const gist = mockGist({ created_at: new Date(), author: 'GOTHER' });
+      gistRepository.findByGistId.mockResolvedValue(gist);
+
+      await expect(service.update('uuid-1', dto)).rejects.toThrow(ForbiddenException);
+      expect(gistRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('throws ForbiddenException when gist has no stored author', async () => {
+      const gist = mockGist({ created_at: new Date(), author: null });
+      gistRepository.findByGistId.mockResolvedValue(gist);
+
+      await expect(service.update('uuid-1', dto)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('records lineage from the previous content_hash to a new cid', async () => {
+      const gist = mockGist({ created_at: new Date(), author: 'GABC', content_hash: 'old_cid' });
+      gistRepository.findByGistId.mockResolvedValue(gist);
+      ipfsService.pinJson.mockResolvedValue({ cid: 'new_cid', mock: true });
+      gistRepository.update.mockResolvedValue(mockGist({ content_hash: 'new_cid' }));
+      cacheService.del.mockResolvedValue();
+      cacheService.delPattern.mockResolvedValue();
+
+      await service.update('uuid-1', dto);
+
+      expect(gistRepository.update).toHaveBeenCalledWith(
+        'uuid-1',
+        expect.objectContaining({
+          content: 'Fixed typo',
+          content_hash: 'new_cid',
+          previous_cid: 'old_cid',
+        }),
+      );
+    });
+
+    it('invalidates the single-gist and nearby caches after a successful edit', async () => {
+      const gist = mockGist({ created_at: new Date() });
+      gistRepository.findByGistId.mockResolvedValue(gist);
+      ipfsService.pinJson.mockResolvedValue({ cid: 'new_cid', mock: true });
+      gistRepository.update.mockResolvedValue(mockGist());
+      cacheService.del.mockResolvedValue();
+      cacheService.delPattern.mockResolvedValue();
+
+      await service.update('uuid-1', dto);
+
+      expect(cacheService.del).toHaveBeenCalledWith('gist:one:uuid-1');
+      expect(cacheService.delPattern).toHaveBeenCalled();
+    });
+
+    it('returns the updated gist from the repository', async () => {
+      const gist = mockGist({ created_at: new Date() });
+      const updated = mockGist({ content: 'Fixed typo', content_hash: 'new_cid' });
+      gistRepository.findByGistId.mockResolvedValue(gist);
+      ipfsService.pinJson.mockResolvedValue({ cid: 'new_cid', mock: true });
+      gistRepository.update.mockResolvedValue(updated);
+      cacheService.del.mockResolvedValue();
+      cacheService.delPattern.mockResolvedValue();
+
+      const result = await service.update('uuid-1', dto);
+
+      expect(result).toBe(updated);
     });
   });
 });

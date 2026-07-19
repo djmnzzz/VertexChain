@@ -1,6 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGistDto } from './dto/create-gist.dto';
 import { QueryGistsDto } from './dto/query-gists.dto';
+import { UpdateGistDto } from './dto/update-gist.dto';
 import { GistRepository } from './gist.repository';
 import { GeoService } from '../geo/geo.service';
 import { IpfsService } from '../ipfs/ipfs.service';
@@ -9,6 +17,8 @@ import { CacheService } from '../cache/cache.service';
 import { Gist } from './entities/gist.entity';
 import { PaginatedResponse } from '../common/utils/pagination.helper';
 import { stripHtml } from '../common/utils/sanitize';
+
+const EDIT_WINDOW_MS = 60_000;
 
 @Injectable()
 export class GistsService {
@@ -48,6 +58,7 @@ export class GistsService {
       content_hash: cid,
       stellar_gist_id: gistId,
       tx_hash: txHash,
+      author: dto.author,
     });
 
     // Invalidate nearby cache for the affected area
@@ -163,6 +174,47 @@ export class GistsService {
     }
 
     return result;
+  }
+
+  async update(id: string, dto: UpdateGistDto): Promise<Gist> {
+    const gist = await this.gistRepository.findByGistId(id);
+
+    if (!gist) {
+      throw new NotFoundException(`Gist ${id} not found`);
+    }
+
+    const elapsedMs = Date.now() - new Date(gist.created_at).getTime();
+    if (elapsedMs > EDIT_WINDOW_MS) {
+      throw new HttpException('Edit window has closed for this gist', HttpStatus.GONE);
+    }
+
+    if (!gist.author || gist.author !== dto.author) {
+      throw new ForbiddenException('Only the original author may edit this gist');
+    }
+
+    const content = stripHtml(dto.content);
+
+    const { cid } = await this.ipfsService.pinJson({
+      content,
+      lat: gist.lat,
+      lon: gist.lon,
+      location_cell: gist.location_cell,
+      created_at: new Date().toISOString(),
+    });
+
+    const updated = await this.gistRepository.update(id, {
+      content,
+      content_hash: cid,
+      previous_cid: gist.content_hash,
+      edited_at: new Date(),
+    });
+
+    this.logger.log(`Gist edited → id=${id} previous_cid=${gist.content_hash} new_cid=${cid}`);
+
+    await this.cacheService.del(`gist:one:${id}`);
+    await this.invalidateNearbyCache(gist.lat, gist.lon);
+
+    return updated as Gist;
   }
 
   private async invalidateNearbyCache(lat: number, lon: number): Promise<void> {

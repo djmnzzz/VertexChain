@@ -161,6 +161,83 @@ describe('Gists (e2e)', () => {
     });
   });
 
+  describe('PATCH /gists/:id', () => {
+    async function createAuthoredGist(author = 'GABC...XYZ') {
+      const csrf = await getCsrfToken(app.getHttpServer());
+      const res = await request(app.getHttpServer())
+        .post('/gists')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
+        .send({ content: 'original content', lat: 9.0579, lon: 7.4951, author })
+        .expect(201);
+      return res.body;
+    }
+
+    it('should reject PATCH /gists/:id without CSRF token', async () => {
+      const gist = await createAuthoredGist();
+
+      await request(app.getHttpServer())
+        .patch(`/gists/${gist.id}`)
+        .send({ content: 'fixed typo', author: 'GABC...XYZ' })
+        .expect(403);
+    });
+
+    it('should edit a gist within the 60s window and preserve CID lineage', async () => {
+      const gist = await createAuthoredGist();
+      const csrf = await getCsrfToken(app.getHttpServer());
+
+      const res = await request(app.getHttpServer())
+        .patch(`/gists/${gist.id}`)
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
+        .send({ content: 'fixed typo', author: 'GABC...XYZ' })
+        .expect(200);
+
+      expect(res.body).toMatchObject({
+        id: gist.id,
+        content: 'fixed typo',
+        previous_cid: gist.content_hash,
+        content_hash: expect.stringContaining('mock_'),
+      });
+      expect(res.body.content_hash).not.toBe(gist.content_hash);
+    });
+
+    it('should return 403 when the author does not match', async () => {
+      const gist = await createAuthoredGist('GABC...XYZ');
+      const csrf = await getCsrfToken(app.getHttpServer());
+
+      await request(app.getHttpServer())
+        .patch(`/gists/${gist.id}`)
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
+        .send({ content: 'imposter edit', author: 'GIMPOSTOR' })
+        .expect(403);
+    });
+
+    it('should return 404 for a non-existent gist', async () => {
+      const csrf = await getCsrfToken(app.getHttpServer());
+
+      await request(app.getHttpServer())
+        .patch('/gists/00000000-0000-0000-0000-000000000000')
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
+        .send({ content: 'no such gist', author: 'GABC...XYZ' })
+        .expect(404);
+    });
+
+    it('should return 400 when content exceeds 280 characters', async () => {
+      const gist = await createAuthoredGist();
+      const csrf = await getCsrfToken(app.getHttpServer());
+
+      await request(app.getHttpServer())
+        .patch(`/gists/${gist.id}`)
+        .set('Cookie', csrf.cookie)
+        .set('x-csrf-token', csrf.token)
+        .send({ content: 'x'.repeat(281), author: 'GABC...XYZ' })
+        .expect(400);
+    });
+  });
+
   describe('GET /health', () => {
     it('returns the documented liveness envelope (200 ok / 503 degraded)', async () => {
       // Tightened contract: HTTP status is coupled to body `status`

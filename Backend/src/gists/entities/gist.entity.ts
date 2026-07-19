@@ -22,6 +22,15 @@ export class Gist {
   @Column({ type: 'varchar', length: 80, nullable: true })
   tx_hash: string | null;
 
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  author: string | null;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  previous_cid: string | null;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  edited_at: Date | null;
+
   /**
    * PostGIS geography(Point, 4326) column.
    * TypeORM has no native geography type — the real column is created
@@ -33,4 +42,8 @@ export class Gist {
 
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
+
+  // Not persisted columns — populated by ST_X/ST_Y in raw SELECT queries.
+  lat?: number;
+  lon?: number;
 }
