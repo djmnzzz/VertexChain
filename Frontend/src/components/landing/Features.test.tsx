@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeAll } from 'vitest'
 import { Features } from './Features'
+import gsap from 'gsap'
 
 vi.mock('next/image', () => ({
   default: ({ alt }: { alt: string }) => <img alt={alt} />,
@@ -66,5 +67,41 @@ describe('Features', () => {
     window.dispatchEvent(new Event('resize'))
     render(<Features />)
     expect(screen.getByText('The Hyperlocal Information Hub')).toBeInTheDocument()
+  })
+
+  it('does not trigger GSAP animations when prefers-reduced-motion is enabled', () => {
+    const originalMatchMedia = window.matchMedia;
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: vi.fn().mockImplementation((query) => ({
+        matches: query === '(prefers-reduced-motion: reduce)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
+
+    const mockFromTo = vi.mocked(gsap.fromTo);
+    mockFromTo.mockClear();
+
+    render(<Features />);
+
+    expect(mockFromTo).not.toHaveBeenCalled();
+
+    if (originalMatchMedia) {
+      Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        configurable: true,
+        value: originalMatchMedia,
+      });
+    } else {
+      // @ts-expect-error - deleting matchMedia if it wasn't originally defined
+      delete (window as { matchMedia?: unknown }).matchMedia;
+    }
   })
 })

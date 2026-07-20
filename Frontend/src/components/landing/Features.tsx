@@ -5,6 +5,7 @@ import { Badge } from '../ui/badge';
 import { AnimatedBeam } from "../magicui/animated-beam";
 import { Circle } from './Circle';
 import gsap from 'gsap';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import {
   Lightbulb, MapPinIcon, UsersIcon, Siren,
   Globe, ShieldCheck, MessageSquare, TimerIcon, Zap
@@ -25,6 +26,12 @@ const useIsMobile = () => {
 export const Features: React.FC = () => {
   const featureRefs = useRef<HTMLDivElement[]>([]);
   const isMobile = useIsMobile();
+  const reducedMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Responsive center points
   const centerX = isMobile ? 160 : 225;
@@ -43,6 +50,9 @@ export const Features: React.FC = () => {
   ];
 
   useEffect(() => {
+    if (!mounted) return;
+    if (reducedMotion) return;
+
     featureRefs.current.forEach((el, index) => {
       gsap.fromTo(
         el,
@@ -56,7 +66,7 @@ export const Features: React.FC = () => {
         }
       );
     });
-  }, []);
+  }, [mounted, reducedMotion]);
 
   const features = [
     {
@@ -134,6 +144,15 @@ export const Features: React.FC = () => {
                   if (el) featureRefs.current[index] = el;
                 }}
                 className="p-4 sm:p-6 bg-neutral-950 backdrop-blur-md rounded-lg shadow-lg border border-gray-700/50"
+                style={
+                  reducedMotion
+                    ? {
+                        opacity: mounted ? 1 : 0,
+                        transition: 'opacity 0.8s ease-out',
+                        transitionDelay: `${index * 0.2}s`,
+                      }
+                    : undefined
+                }
               >
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">

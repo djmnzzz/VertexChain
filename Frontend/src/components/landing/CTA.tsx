@@ -5,17 +5,27 @@ import { ArrowRight } from 'lucide-react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { GridPattern } from '@/components/ui/grid-pattern';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib/utils';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function CTA() {
   const containerRef = useRef(null);
+  const reducedMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useGSAP(
     () => {
+      if (!mounted) return;
+      if (reducedMotion) return;
+
       gsap.from('.cta-content', {
         scrollTrigger: {
           trigger: containerRef.current,
@@ -29,7 +39,7 @@ export default function CTA() {
         ease: 'power3.out',
       });
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [mounted, reducedMotion] }
   );
 
   return (
@@ -52,17 +62,50 @@ export default function CTA() {
         <div className="glow-layer"></div>
 
         <div className="relative z-10 p-8 md:p-12 rounded-3xl bg-black/40 backdrop-blur-xl border border-white/10">
-          <h2 className="cta-content text-3xl font-bold text-white md:text-4xl">
+          <h2
+            className="cta-content text-3xl font-bold text-white md:text-4xl"
+            style={
+              reducedMotion
+                ? {
+                    opacity: mounted ? 1 : 0,
+                    transition: 'opacity 0.8s ease-out',
+                    transitionDelay: '0s',
+                  }
+                : undefined
+            }
+          >
             Ready to See What&apos;s{' '}
             <span className="text-purple-500">Happening</span>?
           </h2>
 
-          <p className="cta-content max-w-xl mx-auto mt-4 text-white/70">
+          <p
+            className="cta-content max-w-xl mx-auto mt-4 text-white/70"
+            style={
+              reducedMotion
+                ? {
+                    opacity: mounted ? 1 : 0,
+                    transition: 'opacity 0.8s ease-out',
+                    transitionDelay: '0.2s',
+                  }
+                : undefined
+            }
+          >
             From the bustling streets of Lagos to the quiet corners of your
             neighborhood, discover and share what&apos;s happening right now.
             Your community is waiting.
           </p>
-          <div className="cta-content mt-8">
+          <div
+            className="cta-content mt-8"
+            style={
+              reducedMotion
+                ? {
+                    opacity: mounted ? 1 : 0,
+                    transition: 'opacity 0.8s ease-out',
+                    transitionDelay: '0.4s',
+                  }
+                : undefined
+            }
+          >
             <Link
               href="/map"
               className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-black transition-all duration-300 bg-purple-950 rounded-lg hover:bg-purple-900 hover:scale-105"
