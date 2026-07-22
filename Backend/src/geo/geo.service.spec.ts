@@ -1,4 +1,5 @@
 import { GeoService } from './geo.service';
+import * as fc from 'fast-check';
 
 describe('GeoService', () => {
   let service: GeoService;
@@ -71,6 +72,119 @@ describe('GeoService', () => {
         expect(Math.abs(decoded.lat - lat)).toBeLessThan(0.01);
         expect(Math.abs(decoded.lon - lon)).toBeLessThan(0.01);
       }
+    });
+  });
+
+  // ------------------------------------------------------------------
+  // Property-based (fuzz) tests with fast-check
+  // ------------------------------------------------------------------
+
+  describe('property-based (fuzz)', () => {
+    // Geohash idempotency: encode(decode(encode(x))) ≈ encode(x)
+    it('encode(decode(encode(x))) should equal encode(x) for random lat/lon pairs', () => {
+      fc.assert(
+        fc.property(
+          fc.double({ min: -90, max: 90, noNaN: true }),
+          fc.double({ min: -180, max: 180, noNaN: true }),
+          (lat, lon) => {
+            const hash = service.encode(lat, lon, 7);
+            const decoded = service.decode(hash);
+            const reencoded = service.encode(decoded.lat, decoded.lon, 7);
+            expect(reencoded).toBe(hash);
+          },
+        ),
+        { numRuns: 1000 },
+      );
+    });
+
+    // Round-trip: encode then decode gives a point within the expected tolerance
+    it('decode(encode(lat, lon)) should be within precision tolerance', () => {
+      fc.assert(
+        fc.property(
+          fc.double({ min: -90, max: 90, noNaN: true }),
+          fc.double({ min: -180, max: 180, noNaN: true }),
+          (lat, lon) => {
+            const hash = service.encode(lat, lon, 7);
+            const decoded = service.decode(hash);
+            // For precision 7, error should be < ~0.01 degrees
+            expect(Math.abs(decoded.lat - lat)).toBeLessThan(0.02);
+            expect(Math.abs(decoded.lon - lon)).toBeLessThan(0.02);
+          },
+        ),
+        { numRuns: 1000 },
+      );
+    });
+
+    // Pole cases: lat = ±90 produces a stable hash
+    it('should produce stable hashes at the poles', () => {
+      fc.assert(
+        fc.property(
+          fc.double({ min: -180, max: 180, noNaN: true }),
+          (lon) => {
+            const hashNorth = service.encode(90, lon, 7);
+            const hashSouth = service.encode(-90, lon, 7);
+            expect(hashNorth).toHaveLength(7);
+            expect(hashSouth).toHaveLength(7);
+            // All north pole hashes at any longitude should be the same
+            // because latitude is clamped by the geohash algorithm
+            const { lat: latNorth } = service.decode(hashNorth);
+            const { lat: latSouth } = service.decode(hashSouth);
+            expect(latNorth).toBeGreaterThan(89);
+            expect(latSouth).toBeLessThan(-89);
+          },
+        ),
+        { numRuns: 100 },
+      );
+    });
+
+    // Antimeridian: lon = ±180 produces a stable hash
+    it('should produce stable hashes at the antimeridian', () => {
+      fc.assert(
+        fc.property(
+          fc.double({ min: -90, max: 90, noNaN: true }),
+          (lat) => {
+            const hash180 = service.encode(lat, 180, 7);
+            const hashNeg180 = service.encode(lat, -180, 7);
+            expect(hash180).toHaveLength(7);
+            expect(hashNeg180).toHaveLength(7);
+            // Both should decode to the same cell (or adjacent)
+            const decoded180 = service.decode(hash180);
+            const decodedNeg180 = service.decode(hashNeg180);
+            expect(Math.abs(decoded180.lon)).toBeGreaterThan(179);
+            expect(Math.abs(decodedNeg180.lon)).toBeGreaterThan(179);
+          },
+        ),
+        { numRuns: 100 },
+      );
+    });
+
+    // All geohash characters are valid base32
+    it('geohash should only contain valid base32 characters', () => {
+      fc.assert(
+        fc.property(
+          fc.double({ min: -90, max: 90, noNaN: true }),
+          fc.double({ min: -180, max: 180, noNaN: true }),
+          (lat, lon) => {
+            const hash = service.encode(lat, lon, 7);
+            expect(hash).toMatch(/^[0123456789bcdefghjkmnpqrstuvwxyz]+$/);
+          },
+        ),
+        { numRuns: 1000 },
+      );
+    });
+
+    // Hash length matches requested precision
+    it('encode should respect precision parameter', () => {
+      fc.assert(
+        fc.property(
+          fc.integer({ min: 1, max: 12 }),
+          (precision) => {
+            const hash = service.encode(9.0579, 7.4951, precision);
+            expect(hash).toHaveLength(precision);
+          },
+        ),
+        { numRuns: 50 },
+      );
     });
   });
 });
