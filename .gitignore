@@ -4,3 +4,19 @@ node_modules/
 
 CLAUDE.md
 plan.md
+
+# Terraform — ignore env-specific var files that may contain real IDs/secrets.
+# Only *.tfvars.example files (safe templates) are tracked in git.
+infrastructure/terraform/envs/*.tfvars
+!infrastructure/terraform/envs/*.tfvars.example
+
+# Terraform local state / lock / cache files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

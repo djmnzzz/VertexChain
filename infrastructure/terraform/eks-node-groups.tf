@@ -4,12 +4,12 @@ resource "aws_eks_node_group" "app" {
   node_role_arn   = aws_iam_role.eks_nodes.arn
   subnet_ids      = var.private_subnet_ids
 
-  instance_types = ["t3.medium"]
+  instance_types = [var.eks_node_instance_type]
 
   scaling_config {
-    desired_size = 2
-    min_size     = 1
-    max_size     = 5
+    desired_size = var.eks_desired_size
+    min_size     = var.eks_min_size
+    max_size     = var.eks_max_size
   }
 
   update_config { max_unavailable = 1 }

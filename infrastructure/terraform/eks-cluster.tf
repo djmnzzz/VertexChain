@@ -1,29 +1,4 @@
-variable "project_name" {
-  description = "Project name"
-  type        = string
-  default     = "vertexchain"
-}
-
-variable "environment" {
-  description = "Deployment environment"
-  type        = string
-}
-
-variable "region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-east-1"
-}
-
-variable "private_subnet_ids" {
-  description = "List of private subnet IDs"
-  type        = list(string)
-}
-
-variable "public_subnet_ids" {
-  description = "List of public subnet IDs"
-  type        = list(string)
-}
+# Variable declarations have been moved to variables.tf
 
 resource "aws_eks_cluster" "main" {
   name     = "${var.project_name}-${var.environment}"

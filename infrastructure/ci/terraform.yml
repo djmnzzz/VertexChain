@@ -31,9 +31,91 @@ env:
   AWS_REGION: us-east-1
   TF_WORKING_DIR: infrastructure/terraform
 
+# ---------------------------------------------------------------------------
+# Job 1 – Matrix plan: validate plan against every environment in parallel.
+# Runs on every PR and every push to main that touches terraform code.
+# ---------------------------------------------------------------------------
 jobs:
+  plan-matrix:
+    name: Plan – ${{ matrix.env }}
+    # Skip on workflow_dispatch so manual apply runs don't trigger a redundant
+    # matrix; the single-workspace job below covers that path.
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [dev, staging, prod]
+
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Select / Create Workspace
+        run: |
+          terraform workspace select "${{ matrix.env }}" \
+            || terraform workspace new "${{ matrix.env }}"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan \
+            -input=false \
+            -no-color \
+            -var-file="envs/terraform.tfvars.${{ matrix.env }}"
+        continue-on-error: true
+
+      - name: Post Plan to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outcome = '${{ steps.plan.outcome }}';
+            const icon    = outcome === 'success' ? '✅' : '❌';
+            const output  = [
+              `#### ${icon} Terraform Plan – \`${{ matrix.env }}\` ${outcome}`,
+              '',
+              '```',
+              `${{ steps.plan.outputs.stdout }}`,
+              '```',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: output,
+            });
+
+      - name: Fail if plan errored
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+# ---------------------------------------------------------------------------
+# Job 2 – Resolve workspace for manual / push-to-main flows.
+# ---------------------------------------------------------------------------
   resolve-workspace:
     name: Resolve Workspace
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       workspace: ${{ steps.resolve.outputs.workspace }}
@@ -44,15 +126,15 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "workspace=${{ inputs.workspace }}" >> "$GITHUB_OUTPUT"
             echo "action=${{ inputs.action }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "workspace=dev" >> "$GITHUB_OUTPUT"
-            echo "action=plan" >> "$GITHUB_OUTPUT"
           else
             # push to main → staging apply
             echo "workspace=staging" >> "$GITHUB_OUTPUT"
             echo "action=apply" >> "$GITHUB_OUTPUT"
           fi
 
+# ---------------------------------------------------------------------------
+# Job 3 – Single-workspace plan or apply (manual dispatch / push to main).
+# ---------------------------------------------------------------------------
   terraform:
     name: Terraform ${{ needs.resolve-workspace.outputs.action }} (${{ needs.resolve-workspace.outputs.workspace }})
     needs: resolve-workspace
@@ -81,7 +163,7 @@ jobs:
       - name: Terraform Init
         run: terraform init -input=false
 
-      - name: Select Workspace
+      - name: Select / Create Workspace
         run: |
           terraform workspace select "${{ needs.resolve-workspace.outputs.workspace }}" \
             || terraform workspace new "${{ needs.resolve-workspace.outputs.workspace }}"
@@ -89,7 +171,11 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: needs.resolve-workspace.outputs.action == 'plan'
-        run: terraform plan -input=false -no-color
+        run: |
+          terraform plan \
+            -input=false \
+            -no-color \
+            -var-file="envs/terraform.tfvars.${{ needs.resolve-workspace.outputs.workspace }}"
         continue-on-error: true
 
       - name: Post Plan to PR
@@ -107,4 +193,8 @@ jobs:
 
       - name: Terraform Apply
         if: needs.resolve-workspace.outputs.action == 'apply'
-        run: terraform apply -input=false -auto-approve
+        run: |
+          terraform apply \
+            -input=false \
+            -auto-approve \
+            -var-file="envs/terraform.tfvars.${{ needs.resolve-workspace.outputs.workspace }}"

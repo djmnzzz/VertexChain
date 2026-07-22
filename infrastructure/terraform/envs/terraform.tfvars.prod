@@ -1,0 +1,37 @@
+# ============================================================
+# Production environment variable values
+# Usage: terraform plan -var-file=envs/terraform.tfvars.prod
+# ============================================================
+
+# General
+environment  = "prod"
+region       = "us-east-1"
+project_name = "vertexchain"
+
+# Networking (fill in after VPC is created via bootstrap)
+vpc_id             = "vpc-REPLACE_PROD"
+vpc_cidr           = "10.2.0.0/16"
+private_subnet_ids = ["subnet-REPLACE_PROD_PRIVATE_1", "subnet-REPLACE_PROD_PRIVATE_2", "subnet-REPLACE_PROD_PRIVATE_3"]
+public_subnet_ids  = ["subnet-REPLACE_PROD_PUBLIC_1", "subnet-REPLACE_PROD_PUBLIC_2", "subnet-REPLACE_PROD_PUBLIC_3"]
+
+# Tags
+cost_center = "engineering"
+owner       = "platform-team"
+
+# RDS
+db_instance_class = "db.t3.medium"
+
+# ElastiCache / Redis
+redis_node_type       = "cache.t3.medium"
+redis_num_cache_nodes = 2
+
+# EKS node group
+eks_node_instance_type = "t3.large"
+eks_desired_size       = 3
+eks_min_size           = 2
+eks_max_size           = 10
+
+# ASG
+asg_min_size     = 2
+asg_max_size     = 10
+asg_desired_size = 3

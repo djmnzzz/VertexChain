@@ -1,0 +1,38 @@
+# ============================================================
+# Example variable values — copy to terraform.tfvars.dev/staging/prod
+# and fill in real values.  Never commit terraform.tfvars.*
+# (they are gitignored); only this example file is tracked.
+# ============================================================
+
+# General
+environment  = "dev"           # dev | staging | prod
+region       = "us-east-1"
+project_name = "vertexchain"
+
+# Networking
+vpc_id             = "vpc-xxxxxxxxxxxxxxxxx"
+vpc_cidr           = "10.0.0.0/16"
+private_subnet_ids = ["subnet-xxxxxxxxxxxxxxxxx", "subnet-xxxxxxxxxxxxxxxxx"]
+public_subnet_ids  = ["subnet-xxxxxxxxxxxxxxxxx", "subnet-xxxxxxxxxxxxxxxxx"]
+
+# Tags
+cost_center = "engineering"
+owner       = "platform-team"
+
+# RDS
+db_instance_class = "db.t3.micro"   # micro / small / medium per env
+
+# ElastiCache / Redis
+redis_node_type       = "cache.t3.micro"
+redis_num_cache_nodes = 1
+
+# EKS node group
+eks_node_instance_type = "t3.small"
+eks_desired_size       = 1
+eks_min_size           = 1
+eks_max_size           = 3
+
+# ASG
+asg_min_size     = 1
+asg_max_size     = 3
+asg_desired_size = 1

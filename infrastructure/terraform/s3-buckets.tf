@@ -1,13 +1,4 @@
-variable "project_name" {
-  description = "Project name"
-  type        = string
-  default     = "vertexchain"
-}
-
-variable "environment" {
-  description = "Deployment environment"
-  type        = string
-}
+# Variable declarations have been moved to variables.tf
 
 resource "aws_s3_bucket" "uploads" {
   bucket = "${var.project_name}-${var.environment}-uploads"

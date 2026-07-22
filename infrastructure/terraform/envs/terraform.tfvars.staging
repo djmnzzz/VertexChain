@@ -1,0 +1,37 @@
+# ============================================================
+# Staging environment variable values
+# Usage: terraform plan -var-file=envs/terraform.tfvars.staging
+# ============================================================
+
+# General
+environment  = "staging"
+region       = "us-east-1"
+project_name = "vertexchain"
+
+# Networking (fill in after VPC is created via bootstrap)
+vpc_id             = "vpc-REPLACE_STAGING"
+vpc_cidr           = "10.1.0.0/16"
+private_subnet_ids = ["subnet-REPLACE_STAGING_PRIVATE_1", "subnet-REPLACE_STAGING_PRIVATE_2"]
+public_subnet_ids  = ["subnet-REPLACE_STAGING_PUBLIC_1", "subnet-REPLACE_STAGING_PUBLIC_2"]
+
+# Tags
+cost_center = "engineering"
+owner       = "platform-team"
+
+# RDS
+db_instance_class = "db.t3.small"
+
+# ElastiCache / Redis
+redis_node_type       = "cache.t3.small"
+redis_num_cache_nodes = 1
+
+# EKS node group
+eks_node_instance_type = "t3.medium"
+eks_desired_size       = 2
+eks_min_size           = 1
+eks_max_size           = 4
+
+# ASG
+asg_min_size     = 1
+asg_max_size     = 4
+asg_desired_size = 2
