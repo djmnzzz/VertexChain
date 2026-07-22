@@ -38,32 +38,39 @@ export function stripHtml(input: string): string {
 }
 
 /**
- * Strip user-generated content: removes HTML tags AND Unicode bidi control characters.
+ * Strip user-generated content: removes HTML tags, Unicode bidi control
+ * characters, hidden/format characters, and C0/C1 control characters.
  *
- * Removes bidirectional text override characters (U+202A–U+202E, U+2066–U+2069)
- * that can flip display order and break perceived trust in anonymous platforms.
+ * Removes:
+ *  - HTML tags and script content (via stripHtml)
+ *  - Bidirectional text override characters (U+202A–U+202E, U+2066–U+2069)
+ *    that can flip display order and break perceived trust in anonymous platforms.
+ *  - Hidden/format characters (U+200B zero-width space, U+200C ZWNJ,
+ *    U+200D ZWJ, U+FEFF BOM, U+00AD soft hyphen)
+ *  - C0 control characters (U+0000–U+001F) except tab, newline, carriage return
+ *  - C1 control characters (U+0080–U+009F)
  *
  * Preserves:
  *  - All printable Unicode (including accented characters, CJK, etc.)
  *  - Emoji and emoji ZWJ sequences
- *  - Standard whitespace and newlines
+ *  - Standard whitespace: tab (U+0009), newline (U+000A), carriage return (U+000D)
  *
  * @param input - Raw user content
- * @returns Sanitized plain text without HTML or bidi controls
+ * @returns Sanitized plain text without HTML, bidi controls, or hidden chars
  */
 export function stripUserContent(input: string): string {
   // First strip HTML
   const noHtml = stripHtml(input);
 
-  // Remove Unicode bidi control characters:
-  // U+202A (LRE) - Left-to-Right Embedding
-  // U+202B (RLE) - Right-to-Left Embedding
-  // U+202C (PDF) - Pop Directional Formatting
-  // U+202D (LRO) - Left-to-Right Override
-  // U+202E (RLO) - Right-to-Left Override
-  // U+2066 (LRI) - Left-to-Right Isolate
-  // U+2067 (RLI) - Right-to-Left Isolate
-  // U+2068 (FSI) - First Strong Isolate
-  // U+2069 (PDI) - Pop Directional Isolate
-  return noHtml.replace(/[\u202A-\u202E\u2066-\u2069]/g, '');
+  // Remove Unicode bidi control characters
+  // Remove hidden/format characters (zero-width space, zero-width non-joiner,
+  //   BOM, soft hyphen); preserve ZWJ (U+200D) for emoji sequences
+  // Remove C0 control characters except \t (0x09), \n (0x0A), \r (0x0D)
+  // Remove C1 control characters (U+0080–U+009F)
+
+  /* eslint-disable no-control-regex */
+  const unsafe =
+    /[\u202A-\u202E\u2066-\u2069]|[\u200B\u200C\uFEFF\u00AD]|[\u0000-\u0008\u000B\u000C\u000E-\u001F]|[\u0080-\u009F]/g;
+  /* eslint-enable no-control-regex */
+  return noHtml.replace(unsafe, '');
 }

@@ -1,3 +1,4 @@
+import * as fc from 'fast-check';
 import { stripHtml, stripUserContent } from './sanitize';
 
 describe('stripHtml', () => {
@@ -279,5 +280,155 @@ describe('stripUserContent', () => {
       expect(stripUserContent(maliciousInput)).not.toContain('\u202E');
       expect(stripUserContent(maliciousInput)).toBe('filenametxt.exe');
     });
+  });
+});
+
+describe('stripUserContent — property-based tests', () => {
+  // ── Category 1: No HTML survives ──────────────────────────────────────
+  it('output never contains angle brackets for any string', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const out = stripUserContent(input);
+        expect(out).not.toContain('<');
+        expect(out).not.toContain('>');
+      }),
+    );
+  });
+
+  // ── Category 2: Bidi control characters are always removed ────────────
+  it('removes all Unicode bidi control characters (U+202A–U+202E, U+2066–U+2069)', () => {
+    const bidiArbitrary = fc.constantFrom(
+      '\u202A',
+      '\u202B',
+      '\u202C',
+      '\u202D',
+      '\u202E',
+      '\u2066',
+      '\u2067',
+      '\u2068',
+      '\u2069',
+    );
+    fc.assert(
+      fc.property(fc.string(), bidiArbitrary, (prefix, bidi) => {
+        const input = prefix + bidi + prefix;
+        const out = stripUserContent(input);
+        expect(out).not.toContain(bidi);
+      }),
+    );
+  });
+
+  // ── Category 3: Hidden / format characters are removed ────────────────
+  it('removes zero-width and format characters (U+200B, U+200C, U+FEFF, U+00AD) while preserving ZWJ (U+200D)', () => {
+    const hidden = fc.constantFrom(
+      '\u200B', // zero-width space
+      '\u200C', // zero-width non-joiner
+      '\uFEFF', // BOM / zero-width no-break space
+      '\u00AD', // soft hyphen
+    );
+    fc.assert(
+      fc.property(fc.string(), hidden, (prefix, ch) => {
+        const input = prefix + ch + prefix;
+        const out = stripUserContent(input);
+        expect(out).not.toContain(ch);
+      }),
+    );
+  });
+
+  // ── Category 4: Emoji ZWJ sequences are preserved ────────────────────
+  it('preserves emoji ZWJ sequences and skin-tone modifiers', () => {
+    const emojiSeq = fc.constantFrom(
+      '👨‍👩‍👧‍👦', // family (ZWJ sequence)
+      '👩‍💻', // woman technologist
+      '🏳️‍🌈', // rainbow flag
+      '👋🏾', // wave + medium-dark skin tone
+      '👍🏽', // thumbs up + medium skin tone
+      '🧑‍🎤', // singer
+    );
+    fc.assert(
+      fc.property(emojiSeq, (seq) => {
+        const input = `hello ${seq} world`;
+        const out = stripUserContent(input);
+        expect(out).toContain(seq);
+      }),
+    );
+  });
+
+  // ── Category 5: C0 and C1 control characters (except allowed) ────────
+  it('removes C0 control characters (U+0000–U+001F) except newline and tab', () => {
+    const c0 = fc.constantFrom(
+      '\u0000',
+      '\u0001',
+      '\u0002',
+      '\u0003',
+      '\u0004',
+      '\u0005',
+      '\u0006',
+      '\u0007',
+      '\u0008',
+      '\u000B',
+      '\u000C',
+      '\u000E',
+      '\u000F',
+      '\u0010',
+      '\u0011',
+      '\u0012',
+      '\u0013',
+      '\u0014',
+      '\u0015',
+      '\u0016',
+      '\u0017',
+      '\u0018',
+      '\u0019',
+      '\u001A',
+      '\u001B',
+      '\u001C',
+      '\u001D',
+      '\u001E',
+      '\u001F',
+    );
+    fc.assert(
+      fc.property(fc.string(), c0, (prefix, ch) => {
+        const input = prefix + ch + prefix;
+        const out = stripUserContent(input);
+        expect(out).not.toContain(ch);
+      }),
+    );
+  });
+
+  // ── Category 6: Idempotency ──────────────────────────────────────────
+  it('is idempotent — second pass produces identical output', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const once = stripUserContent(input);
+        const twice = stripUserContent(once);
+        expect(twice).toBe(once);
+      }),
+    );
+  });
+
+  // ── Category 7: Output never contains executable JavaScript ──────────
+  it('never produces output containing executable JS patterns', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const out = stripUserContent(input).toLowerCase();
+        expect(out).not.toMatch(/<script/);
+        expect(out).not.toMatch(/javascript\s*:/);
+        expect(out).not.toMatch(/onerror\s*=/);
+        expect(out).not.toMatch(/onload\s*=/);
+      }),
+    );
+  });
+
+  // ── Category 8: Plain text without special chars is preserved ─────────
+  it('preserves alphanumeric and common punctuation', () => {
+    fc.assert(
+      fc.property(
+        fc.string({ unit: fc.constantFrom('a', 'b', 'c', '1', '2', '3', ' ', '.', ',', '!', '?') }),
+        (input) => {
+          const out = stripUserContent(input);
+          expect(out).toBe(input.trim());
+        },
+      ),
+    );
   });
 });
