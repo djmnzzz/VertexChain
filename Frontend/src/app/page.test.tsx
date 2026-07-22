@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 import LandingPage from './page'
 
 vi.mock('@/components/landing/Features', () => ({
@@ -19,5 +20,14 @@ describe('LandingPage', () => {
   it('renders the footer', () => {
     render(<LandingPage />)
     expect(screen.getByText('Footer section')).toBeInTheDocument()
+  })
+
+  it('has no serious or critical accessibility violations', async () => {
+    const { container } = render(<LandingPage />)
+    const results = await axe(container)
+    const seriousOrCritical = results.violations.filter(
+      (violation) => violation.impact === 'serious' || violation.impact === 'critical'
+    )
+    expect(seriousOrCritical).toHaveLength(0)
   })
 })
