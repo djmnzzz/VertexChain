@@ -31,8 +31,6 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
 
-vi.mock('./useCluster', () => ({ useCluster: () => null }))
-
 vi.mock('./AddGistModal', () => ({
   default: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid="add-gist-modal" /> : null,
@@ -94,6 +92,21 @@ describe('Map', () => {
     render(<Map />)
     expect(screen.getByTestId('map-container')).toBeInTheDocument()
     expect(console.warn).toHaveBeenCalled()
+  })
+
+  it('announces the resolved location in an aria-live region', () => {
+    setupGeolocation('success', { latitude: 48.8566, longitude: 2.3522 })
+    render(<Map />)
+    const liveRegion = screen.getByRole('status')
+    expect(liveRegion).toHaveAttribute('aria-live', 'polite')
+    expect(liveRegion).toHaveTextContent('Map centered on 48.8566, 2.3522')
+  })
+
+  it('does not announce a location when geolocation fails', () => {
+    setupGeolocation('error')
+    render(<Map />)
+    const liveRegion = screen.getByRole('status')
+    expect(liveRegion).toHaveTextContent('')
   })
 
   it('opens AddGistModal when the add button is clicked', async () => {
